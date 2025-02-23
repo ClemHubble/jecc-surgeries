@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operation Duration vs Age</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            font-family: Arial, sans-serif;
+        }
+        #sidebar {
+            width: 200px;
+            padding: 20px;
+        }
+        #chart-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #chart {
+            width: 600px;
+            height: 400px;
+        }
+        #right-space {
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <h3>Age Filter</h3>
+        <label>Min Age: <span id="minAgeValue">0</span></label>
+        <input type="range" id="minAge" min="0" max="100" value="0">
+        <label>Max Age: <span id="maxAgeValue">100</span></label>
+        <input type="range" id="maxAge" min="0" max="100" value="100">
+    </div>
+    
+    <div id="chart-container">
+        <svg id="chart"></svg>
+    </div>
+    
+    <div id="right-space"></div>
+    
+    <script>
+        const width = 600, height = 400;
+        const svg = d3.select("#chart").attr("width", width).attr("height", height);
+
+        let data = [];
+
+        d3.csv("vitaldb_cases.csv").then(rawData => {
+            data = rawData.map(d => ({
+                age: +d.age,
+                op_duration: +d.opend - +d.opstart
+            }));
+            updateChart();
+        });
+
+        function updateChart() {
+            const minAge = +document.getElementById("minAge").value;
+            const maxAge = +document.getElementById("maxAge").value;
+            document.getElementById("minAgeValue").innerText = minAge;
+            document.getElementById("maxAgeValue").innerText = maxAge;
+            
+            const filteredData = data.filter(d => d.age >= minAge && d.age <= maxAge);
+            
+            const xScale = d3.scaleLinear().domain([0, 100]).range([50, width - 50]);
+            const yScale = d3.scaleLinear().domain([0, d3.max(filteredData, d => d.op_duration)]).range([height - 50, 50]);
+            
+            svg.selectAll("circle").data(filteredData).join("circle")
+                .attr("cx", d => xScale(d.age))
+                .attr("cy", d => yScale(d.op_duration))
+                .attr("r", 4)
+                .attr("fill", "blue");
+        }
+
+        document.getElementById("minAge").addEventListener("input", updateChart);
+        document.getElementById("maxAge").addEventListener("input", updateChart);
+    </script>
+</body>
+</html>
