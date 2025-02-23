@@ -10,45 +10,47 @@
             display: flex;
             font-family: Arial, sans-serif;
         }
-        #sidebar {
-            width: 200px;
+        #left-space {
+            width: 50%;
             padding: 20px;
         }
-        #chart-container {
-            flex-grow: 1;
+        #right-container {
+            width: 50%;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
         }
         #chart {
             width: 600px;
             height: 400px;
         }
-        #right-space {
-            width: 200px;
+        #slider-container {
+            width: 600px;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
     </style>
 </head>
 <body>
-    <div id="sidebar">
-        <h3>Age Filter</h3>
-        <label>Min Age: <span id="minAgeValue">0</span></label>
-        <input type="range" id="minAge" min="0" max="100" value="0">
-        <label>Max Age: <span id="maxAgeValue">100</span></label>
-        <input type="range" id="maxAge" min="0" max="100" value="100">
-    </div>
+    <div id="left-space"></div>
     
-    <div id="chart-container">
+    <div id="right-container">
         <svg id="chart"></svg>
+        
+        <div id="slider-container">
+            <label>Age Range: <span id="ageRangeValue">0 - 100</span></label>
+            <input type="range" id="ageSlider" min="0" max="100" value="50" style="width: 100%;">
+        </div>
     </div>
-    
-    <div id="right-space"></div>
     
     <script>
         const width = 600, height = 400;
         const svg = d3.select("#chart").attr("width", width).attr("height", height);
 
         let data = [];
+        let ageMin = 0, ageMax = 100;
 
         d3.csv("vitaldb_cases.csv").then(rawData => {
             data = rawData.map(d => ({
@@ -59,12 +61,7 @@
         });
 
         function updateChart() {
-            const minAge = +document.getElementById("minAge").value;
-            const maxAge = +document.getElementById("maxAge").value;
-            document.getElementById("minAgeValue").innerText = minAge;
-            document.getElementById("maxAgeValue").innerText = maxAge;
-            
-            const filteredData = data.filter(d => d.age >= minAge && d.age <= maxAge);
+            const filteredData = data.filter(d => d.age >= ageMin && d.age <= ageMax);
             
             const xScale = d3.scaleLinear().domain([0, 100]).range([50, width - 50]);
             const yScale = d3.scaleLinear().domain([0, d3.max(filteredData, d => d.op_duration)]).range([height - 50, 50]);
@@ -76,8 +73,13 @@
                 .attr("fill", "blue");
         }
 
-        document.getElementById("minAge").addEventListener("input", updateChart);
-        document.getElementById("maxAge").addEventListener("input", updateChart);
+        document.getElementById("ageSlider").addEventListener("input", function() {
+            const mid = +this.value;
+            ageMin = Math.max(0, mid - 25);
+            ageMax = Math.min(100, mid + 25);
+            document.getElementById("ageRangeValue").innerText = `${ageMin} - ${ageMax}`;
+            updateChart();
+        });
     </script>
 </body>
 </html>
