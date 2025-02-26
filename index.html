@@ -1,84 +1,222 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operation Duration vs Age</title>
+    <title>Surgical Outcomes Explorer</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
-        body {
-            display: flex;
-            font-family: Arial, sans-serif;
-        }
-        #left-space {
-            width: 50%;
-            padding: 20px;
-        }
-        #right-container {
-            width: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        #chart {
-            width: 600px;
-            height: 400px;
-        }
-        #slider-container {
-            width: 600px;
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .dashboard { display: flex; flex-wrap: wrap; }
+        .controls { width: 300px; padding: 10px; }
+        .chart-container { flex-grow: 1; min-width: 600px; }
+        .tooltip { position: absolute; background: white; border: 1px solid #ddd; 
+                   padding: 10px; border-radius: 5px; pointer-events: none; }
+        select, button { margin: 5px 0; padding: 5px; width: 100%; }
     </style>
 </head>
 <body>
-    <div id="left-space"></div>
-    
-    <div id="right-container">
-        <svg id="chart"></svg>
+    <h1>Surgical Outcomes Explorer</h1>
+    <div class="dashboard">
+        <div class="controls">
+            <h3>Filters</h3>
+            <div>
+                <label>Department:</label>
+                <select id="department-filter">
+                    <option value="all">All Departments</option>
+                    <option value="General surgery">General Surgery</option>
+                    <option value="Thoracic surgery">Thoracic Surgery</option>
+                    <option value="Urology">Urology</option>
+                    <option value="Gynecology">Gynecology</option>
+                </select>
+            </div>
+            <div>
+                <label>ASA Score:</label>
+                <select id="asa-filter">
+                    <option value="all">All Scores</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+            <div>
+                <label>Surgery Type:</label>
+                <select id="surgery-type-filter">
+                    <option value="all">All Types</option>
+                    <option value="Colorectal">Colorectal</option>
+                    <option value="Biliary/Pancreas">Biliary/Pancreas</option>
+                    <option value="Stomach">Stomach</option>
+                    <option value="Breast">Breast</option>
+                </select>
+            </div>
+            <div>
+                <button id="reset-filters">Reset Filters</button>
+            </div>
+            
+            <div class="summary">
+                <h3>Summary Statistics</h3>
+                <div id="summary-stats"></div>
+            </div>
+        </div>
         
-        <div id="slider-container">
-            <label>Age Range: <span id="ageRangeValue">0 - 100</span></label>
-            <input type="range" id="ageSlider" min="0" max="100" value="50" style="width: 100%;">
+        <div class="chart-container">
+            <h3>Surgery Duration vs ICU Stay</h3>
+            <div id="main-chart"></div>
         </div>
     </div>
     
     <script>
-        const width = 600, height = 400;
-        const svg = d3.select("#chart").attr("width", width).attr("height", height);
-
-        let data = [];
-        let ageMin = 0, ageMax = 100;
-
-        d3.csv("vitaldb_cases.csv").then(rawData => {
-            data = rawData.map(d => ({
-                age: +d.age,
-                op_duration: +d.opend - +d.opstart
-            }));
-            updateChart();
-        });
-
-        function updateChart() {
-            const filteredData = data.filter(d => d.age >= ageMin && d.age <= ageMax);
+        // Load data (in a real implementation, load from file)
+        // Sample implementation - you would use the actual data source
+        d3.csv('vitaldb_cases.csv').then(function(data) {
+            // Set up the visualization
+            const margin = {top: 20, right: 30, bottom: 50, left: 50};
+            const width = 800 - margin.left - margin.right;
+            const height = 500 - margin.top - margin.bottom;
             
-            const xScale = d3.scaleLinear().domain([0, 100]).range([50, width - 50]);
-            const yScale = d3.scaleLinear().domain([0, d3.max(filteredData, d => d.op_duration)]).range([height - 50, 50]);
+            // Create SVG
+            const svg = d3.select("#main-chart")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
             
-            svg.selectAll("circle").data(filteredData).join("circle")
-                .attr("cx", d => xScale(d.age))
-                .attr("cy", d => yScale(d.op_duration))
-                .attr("r", 4)
-                .attr("fill", "blue");
-        }
+                data.forEach(d => {
+                d.opend = +d.opend; 
+                d.opstart = +d.opstart;
+                d.icu_days = +d.icu_days;
+                d.age = +d.age;
+                d.asa = +d.asa;
+                d.intraop_ebl = +d.intraop_ebl;
+                d.death_inhosp = +d.death_inhosp;
+            });
 
-        document.getElementById("ageSlider").addEventListener("input", function() {
-            const mid = +this.value;
-            ageMin = Math.max(0, mid - 25);
-            ageMax = Math.min(100, mid + 25);
-            document.getElementById("ageRangeValue").innerText = `${ageMin} - ${ageMax}`;
-            updateChart();
+            const x = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.opend - d.opstart)])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.icu_days)])
+                .range([height, 0]);
+                
+            // Add axes
+            svg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x))
+                .append("text")
+                .attr("x", width/2)
+                .attr("y", 40)
+                .attr("fill", "black")
+                .text("Surgery Duration (hours)");
+                
+            svg.append("g")
+                .call(d3.axisLeft(y))
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", -40)
+                .attr("x", -height/2)
+                .attr("fill", "black")
+                .text("ICU Stay (days)");
+                
+            // Create tooltip
+            const tooltip = d3.select("body")
+                .append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
+                
+            // Plot data points
+            svg.selectAll("circle")
+                .data(data)
+                .enter()
+                .append("circle")
+                .attr("cx", d => x(d.opend - d.opstart))
+                .attr("cy", d => y(d.icu_days))
+                .attr("r", 5)
+                .style("fill", d => d.death_inhosp === 1 ? "orange" : "steelblue")
+                .style("opacity", 0.7)
+                .on("mouseover", function(event, d) {
+                    tooltip.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    tooltip.html(`
+                        Patient ID: ${d.subjectid}<br/>
+                        Age: ${d.age}<br/>
+                        Department: ${d.department}<br/>
+                        Surgery: ${d.opname}<br/>
+                        ASA Score: ${d.asa}<br/>
+                        Surgery Duration: ${((d.opend - d.opstart)/3600).toFixed(2)} hrs<br/>
+                        ICU Stay: ${d.icu_days} days<br/>
+                        Blood Loss: ${d.intraop_ebl} mL
+                    `)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", function() {
+                    tooltip.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                });
+                
+            // Set up filter functionality
+            d3.select("#department-filter").on("change", updateFilters);
+            d3.select("#asa-filter").on("change", updateFilters);
+            d3.select("#surgery-type-filter").on("change", updateFilters);
+            d3.select("#reset-filters").on("click", resetFilters);
+            
+            // Filter update function
+            function updateFilters() {
+                const departmentFilter = d3.select("#department-filter").property("value");
+                const asaFilter = d3.select("#asa-filter").property("value");
+                const typeFilter = d3.select("#surgery-type-filter").property("value");
+                
+                svg.selectAll("circle")
+                    .style("opacity", d => {
+                        if (departmentFilter !== "all" && d.department !== departmentFilter) return 0.1;
+                        if (asaFilter !== "all" && d.asa !== +asaFilter) return 0.1;
+                        if (typeFilter !== "all" && d.optype !== typeFilter) return 0.1;
+                        return 0.7;
+                    });
+                
+                updateSummary(departmentFilter, asaFilter, typeFilter);
+            }
+            
+            // Reset filters function
+            function resetFilters() {
+                d3.select("#department-filter").property("value", "all");
+                d3.select("#asa-filter").property("value", "all");
+                d3.select("#surgery-type-filter").property("value", "all");
+                
+                svg.selectAll("circle")
+                    .style("opacity", 0.7);
+                
+                updateSummary("all", "all", "all");
+            }
+            
+            // Update summary statistics
+            function updateSummary(dept, asa, type) {
+                // Filter data based on selections
+                let filteredData = data;
+                if (dept !== "all") filteredData = filteredData.filter(d => d.department === dept);
+                if (asa !== "all") filteredData = filteredData.filter(d => d.asa === +asa);
+                if (type !== "all") filteredData = filteredData.filter(d => d.optype === type);
+                
+                // Calculate statistics
+                const totalPatients = filteredData.length;
+                const avgSurgeryTime = d3.mean(filteredData, d => (d.opend - d.opstart)/3600);
+                const avgICUStay = d3.mean(filteredData, d => d.icu_days);
+                const mortalityRate = d3.mean(filteredData, d => d.death_inhosp) * 100;
+                
+                // Update summary div
+                d3.select("#summary-stats").html(`
+                    <p>Patients: ${totalPatients}</p>
+                    <p>Avg Surgery Time: ${avgSurgeryTime ? avgSurgeryTime.toFixed(2) : "N/A"} hrs</p>
+                    <p>Avg ICU Stay: ${avgICUStay ? avgICUStay.toFixed(2) : "N/A"} days</p>
+                    <p>Mortality Rate: ${mortalityRate ? mortalityRate.toFixed(2) : "N/A"}%</p>
+                `);
+            }
+            
+            // Initialize summary
+            updateSummary("all", "all", "all");
         });
     </script>
 </body>
