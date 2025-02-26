@@ -65,15 +65,11 @@
     </div>
     
     <script>
-        // Load data (in a real implementation, load from file)
-        // Sample implementation - you would use the actual data source
         d3.csv('vitaldb_cases.csv').then(function(data) {
-            // Set up the visualization
             const margin = {top: 20, right: 30, bottom: 50, left: 50};
             const width = 800 - margin.left - margin.right;
             const height = 500 - margin.top - margin.bottom;
             
-            // Create SVG
             const svg = d3.select("#main-chart")
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -99,7 +95,6 @@
                 .domain([0, d3.max(data, d => d.icu_days)])
                 .range([height, 0]);
                 
-            // Add axes
             svg.append("g")
                 .attr("transform", `translate(0,${height})`)
                 .call(d3.axisBottom(x))
@@ -118,13 +113,11 @@
                 .attr("fill", "black")
                 .text("ICU Stay (days)");
                 
-            // Create tooltip
             const tooltip = d3.select("body")
                 .append("div")
                 .attr("class", "tooltip")
                 .style("opacity", 0);
                 
-            // Plot data points
             svg.selectAll("circle")
                 .data(data)
                 .enter()
@@ -157,13 +150,11 @@
                         .style("opacity", 0);
                 });
                 
-            // Set up filter functionality
             d3.select("#department-filter").on("change", updateFilters);
             d3.select("#asa-filter").on("change", updateFilters);
             d3.select("#surgery-type-filter").on("change", updateFilters);
             d3.select("#reset-filters").on("click", resetFilters);
             
-            // Filter update function
             function updateFilters() {
                 const departmentFilter = d3.select("#department-filter").property("value");
                 const asaFilter = d3.select("#asa-filter").property("value");
@@ -180,7 +171,6 @@
                 updateSummary(departmentFilter, asaFilter, typeFilter);
             }
             
-            // Reset filters function
             function resetFilters() {
                 d3.select("#department-filter").property("value", "all");
                 d3.select("#asa-filter").property("value", "all");
@@ -192,21 +182,17 @@
                 updateSummary("all", "all", "all");
             }
             
-            // Update summary statistics
             function updateSummary(dept, asa, type) {
-                // Filter data based on selections
                 let filteredData = data;
                 if (dept !== "all") filteredData = filteredData.filter(d => d.department === dept);
                 if (asa !== "all") filteredData = filteredData.filter(d => d.asa === +asa);
                 if (type !== "all") filteredData = filteredData.filter(d => d.optype === type);
                 
-                // Calculate statistics
                 const totalPatients = filteredData.length;
                 const avgSurgeryTime = d3.mean(filteredData, d => (d.opend - d.opstart)/3600);
                 const avgICUStay = d3.mean(filteredData, d => d.icu_days);
                 const mortalityRate = d3.mean(filteredData, d => d.death_inhosp) * 100;
                 
-                // Update summary div
                 d3.select("#summary-stats").html(`
                     <p>Patients: ${totalPatients}</p>
                     <p>Avg Surgery Time: ${avgSurgeryTime ? avgSurgeryTime.toFixed(2) : "N/A"} hrs</p>
@@ -215,7 +201,6 @@
                 `);
             }
             
-            // Initialize summary
             updateSummary("all", "all", "all");
         });
     </script>
