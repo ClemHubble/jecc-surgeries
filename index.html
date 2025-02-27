@@ -1,61 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Surgical Outcomes Explorer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surgical Outcomes by Age Group</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Surgical Outcomes Explorer</h1>
+    <h1>Surgical Outcomes by Age Group</h1>
+
     <div class="dashboard">
         <div class="controls">
-            <h3>Filters</h3>
-            <div>
-                <label>Department:</label>
-                <select id="department-filter">
-                    <option value="all">All Departments</option>
-                    <option value="General surgery">General Surgery</option>
-                    <option value="Thoracic surgery">Thoracic Surgery</option>
-                    <option value="Urology">Urology</option>
-                    <option value="Gynecology">Gynecology</option>
-                </select>
-            </div>
-            <div>
-                <label>ASA Score:</label>
-                <select id="asa-filter">
-                    <option value="all">All Scores</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                </select>
-            </div>
-            <div>
-                <label>Surgery Type:</label>
-                <select id="surgery-type-filter">
-                    <option value="all">All Types</option>
-                    <option value="Colorectal">Colorectal</option>
-                    <option value="Biliary/Pancreas">Biliary/Pancreas</option>
-                    <option value="Stomach">Stomach</option>
-                    <option value="Breast">Breast</option>
-                </select>
-            </div>
-            <div>
-                <button id="reset-filters">Reset Filters</button>
-            </div>
-            
-            <div class="summary">
-                <h3>Summary Statistics</h3>
-                <div id="summary-stats"></div>
-            </div>
+            <h3>Filter by Age Group</h3>
+            <div id="slider-container"></div>
         </div>
-        
+
         <div class="chart-container">
-            <h3>Surgery Duration vs ICU Stay</h3>
+            <h3>In-Hospital Deaths by Age Group</h3>
             <div id="main-chart"></div>
         </div>
     </div>
-    
-    <script src="clement.js" type="module"></script>
+
+    <script src="clement_implement_claire_idea.js" type="module"></script>
 </body>
 </html>
