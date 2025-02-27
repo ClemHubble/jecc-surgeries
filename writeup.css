@@ -1,0 +1,26 @@
+#container {
+    display: flex;
+    align-items: flex-start; /* Aligns content to the top */
+    justify-content: space-between;
+}
+
+#visualization {
+    flex: 1;
+    max-width: 60%;
+}
+
+#writeup {
+    flex: 1;
+    max-width: 35%;
+    padding-left: 20px; /* Space between visualization and text */
+}
+
+#writeup h3 {
+    color: #333;
+    margin-top: 10px;
+}
+
+#writeup p {
+    line-height: 1.5;
+    font-size: 16px;
+}
