@@ -27,20 +27,23 @@ d3.csv("vitaldb_cases.csv").then(data => {
     function updateChart(selectedAgeGroup, selectedMetric) {
         const filteredData = data.filter(d => getAgeGroup(d.age) === selectedAgeGroup);
         let categoryCounts;
-
+    
         if (selectedMetric === "mortality") {
             categoryCounts = d3.rollups(filteredData, v => v.length, d => d.death_inhosp);
             categoryCounts = [
                 { label: "Mortality", value: categoryCounts.find(d => d[0] === 0)?.[1] || 0, color: "#4daf4a" },
                 { label: "No Mortality", value: categoryCounts.find(d => d[0] === 1)?.[1] || 0, color: "#e41a1c" }
             ];
-        } else {
+        } else if (selectedMetric === "optype") {
             categoryCounts = d3.rollups(filteredData, v => v.length, d => d.optype)
                 .map(d => ({ label: d[0], value: d[1], color: color(d[0]) }));
+        } else if (selectedMetric === "ane_type") {
+            categoryCounts = d3.rollups(filteredData, v => v.length, d => d.ane_type)
+                .map(d => ({ label: d[0], value: d[1], color: color(d[0]) }));
         }
-
+    
         const arcs = svg.selectAll(".arc").data(pie(categoryCounts));
-
+    
         arcs.enter()
             .append("path")
             .attr("class", "arc")
@@ -48,39 +51,39 @@ d3.csv("vitaldb_cases.csv").then(data => {
             .transition().duration(500)
             .attr("d", arc)
             .attr("fill", d => d.data.color);
-
+    
         arcs.exit().remove();
-
+    
         legendContainer.html("");
         categoryCounts.forEach(d => {
             const legendItem = legendContainer.append("div")
                 .style("display", "flex")
                 .style("align-items", "center")
                 .style("margin", "5px 0");
-
+    
             legendItem.append("div")
                 .style("width", "20px")
                 .style("height", "20px")
                 .style("border-radius", "5px")
                 .style("background-color", d.color)
                 .style("margin-right", "10px");
-
+    
             legendItem.append("span")
                 .style("color", d.color) 
                 .style("font-weight", "bold")
                 .text(d.label);
         });
     }
-
+    
     d3.select("#controls").append("select")
         .attr("id", "metric-selector")
         .selectAll("option")
-        .data(["mortality", "optype"])
+        .data(["mortality", "optype", "ane_type"])  // Add "ane_type" here
         .enter()
         .append("option")
         .attr("value", d => d)
-        .text(d => d === "mortality" ? "Mortality" : "Operation Type");
-
+        .text(d => d === "mortality" ? "Mortality" : d === "optype" ? "Operation Type" : "Anesthesia Type");
+    
     d3.select("#slider-container").append("input")
         .attr("type", "range")
         .attr("min", 0)
@@ -93,13 +96,13 @@ d3.csv("vitaldb_cases.csv").then(data => {
             d3.select("#age-display").text(`Age Group: ${selectedAge}-${selectedAge + 9}`);
             updateChart(selectedAge, selectedMetric);
         });
-
+    
     d3.select("#slider-container").append("div").attr("id", "age-display").text("Age Group: 0-9");
-
+    
     d3.select("#metric-selector").on("change", function () {
         const selectedAge = +d3.select("#slider-container input").node().value;
         updateChart(selectedAge, this.value);
     });
-
-    updateChart(0, "mortality");
+    
+    updateChart(0, "mortality"); 
 });
