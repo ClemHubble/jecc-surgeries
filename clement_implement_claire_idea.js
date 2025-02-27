@@ -78,7 +78,7 @@ d3.csv("vitaldb_cases.csv").then(data => {
     d3.select("#controls").append("select")
         .attr("id", "metric-selector")
         .selectAll("option")
-        .data(["mortality", "optype", "ane_type"])  // Add "ane_type" here
+        .data(["mortality", "optype", "ane_type"])  
         .enter()
         .append("option")
         .attr("value", d => d)
