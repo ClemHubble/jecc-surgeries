@@ -1,6 +1,6 @@
 const width = 500, height = 500, radius = Math.min(width, height) / 2;
 
-const svg = d3.select("#main-chart")
+let svg = d3.select("#main-chart")
     .append("svg")
     .attr("width", width)
     .attr("height", height)
@@ -43,6 +43,7 @@ d3.csv("vitaldb_cases.csv").then(data => {
         
         // for anesthesia type, mortality, and operation type
         function pieChart(categoryCounts) {
+            svg.html("");
             const arcs = svg.selectAll(".arc").data(pie(categoryCounts));
             arcs.enter()
                 .append("path")
@@ -76,9 +77,13 @@ d3.csv("vitaldb_cases.csv").then(data => {
         }
 
         function barChart() {
+            svg.html("");
+            legendContainer.html("");
+
             let age_groups = data.map(d => getAgeGroup(d.age));
             const counts = d3.rollup(age_groups, v => v.length, d => d);
             const age_counts = Array.from(counts, ([category, value]) => ({ category, value }));
+            age_counts.sort((a, b) => a.category - b.category);
             console.log(age_counts)
 
         //     const rawData = ["A", "B", "A", "C", "A", "B", "B", "C", "A", "C", "C", "B", "C"];
@@ -86,22 +91,24 @@ d3.csv("vitaldb_cases.csv").then(data => {
         // // Step 1: Count occurrences of each category
         // const counts = d3.rollup(rawData, v => v.length, d => d);
         // const data = Array.from(counts, ([category, value]) => ({ category, value }));
-        let margin_bar = { top: 0, right: 30, bottom: 10, left: 50 };
+            let margin_bar = { top: -200, right: 50, bottom: 250, left: -100 };
+            let margin_width = 300;
+            let margin_height = 300;
 
             // Create scales
             const x = d3.scaleBand()
                         .domain(age_counts.map(d => d.category))
-                        .range([margin_bar.left, width - margin_bar.right])
+                        .range([margin_bar.left, margin_width - margin_bar.right])
                         .padding(0.2);
 
             const y = d3.scaleLinear()
                         .domain([0, d3.max(age_counts, d => d.value)])
                         .nice()
-                        .range([height - margin_bar.bottom, margin_bar.top]);
+                        .range([margin_height - margin_bar.bottom, margin_bar.top]);
 
             // Append axes
             svg.append("g")
-                .attr("transform", `translate(0,${height - margin_bar.bottom})`)
+                .attr("transform", `translate(0,${margin_height - margin_bar.bottom})`)
                 .call(d3.axisBottom(x));
 
             svg.append("g")
