@@ -6,6 +6,9 @@ body {
 .dashboard { 
     display: flex; 
     flex-wrap: wrap; 
+    justify-content: space-between; /* Ensures space between the sections */
+    align-items: flex-start; /* Aligns them at the top */
+    padding: 50px;
 }
 
 .controls { 
@@ -16,6 +19,7 @@ body {
 .chart-container { 
     flex-grow: 1; 
     min-width: 600px; 
+    padding-left: 250px;
 }
 
 .tooltip { 
