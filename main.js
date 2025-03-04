@@ -31,8 +31,8 @@ d3.csv("vitaldb_cases.csv").then(data => {
         if (selectedMetric === "mortality") {
             categoryCounts = d3.rollups(filteredData, v => v.length, d => d.death_inhosp);
             categoryCounts = [
-                { label: "Mortality", value: categoryCounts.find(d => d[0] === 0)?.[1] || 0, color: "#4daf4a" },
-                { label: "No Mortality", value: categoryCounts.find(d => d[0] === 1)?.[1] || 0, color: "#e41a1c" }
+                { label: "No Mortality", value: categoryCounts.find(d => d[0] === 0)?.[1] || 0, color: "#4daf4a" },
+                { label: "Mortality", value: categoryCounts.find(d => d[0] === 1)?.[1] || 0, color: "#e41a1c" }
             ];
         } else if (selectedMetric === "optype") {
             categoryCounts = d3.rollups(filteredData, v => v.length, d => d.optype)
