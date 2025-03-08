@@ -56,15 +56,21 @@ d3.csv("vitaldb_cases.csv").then(data => {
         // for anesthesia type, mortality, and operation type
         function pieChart(categoryCounts) {
             svg.html("");
-            const arcs = svg.selectAll(".arc").data(pie(categoryCounts));
+
+            const total = d3.sum(categoryCounts, d => d.value);
+
+            const arcs = svg.selectAll(".arc")
+                .data(pie(categoryCounts));
+
             arcs.enter()
                 .append("path")
                 .attr("class", "arc")
                 .merge(arcs)
-                .transition().duration(500)
+                .transition()
+                .duration(500)
                 .attr("d", arc)
                 .attr("fill", d => d.data.color);
-        
+
             arcs.exit().remove();
 
             svg.selectAll(".arc")
@@ -77,34 +83,35 @@ d3.csv("vitaldb_cases.csv").then(data => {
                 })
                 .on("mousemove", (event) => {
                     tooltip.style("left", event.pageX + "px")
-                           .style("top", event.pageY + "px");
+                        .style("top", event.pageY + "px");
                 })
                 .on("mouseout", () => {
                     tooltip.style("opacity", 0);
                 });
 
-            arcs.exit().remove();
-    
             legendContainer.html("");
             categoryCounts.forEach(d => {
                 const legendItem = legendContainer.append("div")
                     .style("display", "flex")
                     .style("align-items", "center")
                     .style("margin", "5px 0");
-        
+
                 legendItem.append("div")
                     .style("width", "20px")
                     .style("height", "20px")
                     .style("border-radius", "5px")
                     .style("background-color", d.color)
                     .style("margin-right", "10px");
-        
+
                 legendItem.append("span")
-                    .style("color", d.color) 
+                    .style("color", d.color)
                     .style("font-weight", "bold")
                     .text(d.label);
             });
         }
+
+    
+
 
         function updateBarChart(age) {
             svg.html("");
