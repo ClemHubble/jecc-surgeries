@@ -19,7 +19,7 @@ body {
 .chart-container { 
     flex-grow: 1; 
     min-width: 600px; 
-    padding-left: 250px;
+    padding-left: 100px;
 }
 
 .tooltip { 

@@ -20,6 +20,7 @@ d3.csv("vitaldb_cases.csv").then(data => {
     data.forEach(d => {
         d.age = +d.age;
         d.death_inhosp = +d.death_inhosp;
+        d.gluc = +d.preop_gluc;
     });
 
     function getAgeGroup(age) {
@@ -135,11 +136,76 @@ d3.csv("vitaldb_cases.csv").then(data => {
                 .text(d => d.value);
         }
 
+        function scatterPlot(age, metric) {
+            let margin_bar = { top: -200, right: 150, bottom: 200, left: -200 };
+            let width = 400;
+            let height = 350;
+            
+            svg.html("");
+            legendContainer.html("");
+            let filtered_data;
+            if (metric == 'preop_gluc') {
+                console.log(data.length);
+                filtered_data = data.filter(d => d.gluc !== 0);
+                console.log(filtered_data.length);
+            }
+            
+        
+            const xScale = d3.scaleLinear()
+                .domain([0, 105])
+                .range([margin_bar.left, width - margin_bar.right]);
+        
+            const yScale = d3.scaleLinear()
+                .domain(d3.extent(filtered_data, d => d.gluc))
+                .range([height - margin_bar.bottom, margin_bar.top]);
+        
+            // Create axes
+            const xAxis = d3.axisBottom(xScale).ticks(9);
+            const yAxis = d3.axisLeft(yScale).ticks(9);
+        
+            svg.append("g")
+                .attr("transform", `translate(0, ${height - margin_bar.bottom})`)
+                .call(xAxis);
+        
+            svg.append("g")
+                .attr("transform", `translate(${margin_bar.left}, 0)`)
+                .call(yAxis);
+        
+            // X-axis label
+            svg.append("text")
+                .attr("x", 0)
+                .attr("y", 200)
+                .style("font-size", "14px")
+                .text("Age");
+        
+            // Y-axis label
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("x", 0)
+                .attr("y", -240)
+                .style("font-size", "14px")
+                .text("Preoperative Glucose");
+        
+            // Add circles for data points
+            svg.selectAll("circle")
+                .data(filtered_data)
+                .enter()
+                .append("circle")
+                .attr("cx", d => xScale(d.age))
+                .attr("cy", d => yScale(d.gluc)) 
+                .attr("r", 3)
+                .attr("fill", "steelblue");
+        }
+        
+
         if (selectedMetric === "optype" | selectedMetric === "ane_type" | selectedMetric === 'mortality') {
             pieChart(categoryCounts);
         }
         else if (selectedMetric === "count") {
             updateBarChart(selectedAgeGroup);
+        }
+        else {
+            scatterPlot(0, 'preop_gluc');
         }
     }
 
@@ -147,32 +213,13 @@ d3.csv("vitaldb_cases.csv").then(data => {
     d3.select("#controls").append("select")
         .attr("id", "metric-selector")
         .selectAll("option")
-        .data(["mortality", "optype", "ane_type", "count"])  
+        .data(["mortality", "optype", "ane_type", "count", "preop_gluc"])  
         .enter()
         .append("option")
         .attr("value", d => d)
-        .text(d => d === "mortality" ? "Mortality" : d === "optype" ? "Operation Type" : d === "ane_type" ? "Anesthesia Type" : "Count");
+        .text(d => d === "mortality" ? "Mortality" : d === "optype" ? "Operation Type" : 
+            d === "ane_type" ? "Anesthesia Type" : d === "count" ? "Count" : "Preoperation Glucose");
     
-
-    // d3.select("#slider-container").append("input")
-    //     .attr("type", "range")
-    //     .attr("min", 0)
-    //     .attr("max", 90)
-    //     .attr("step", 10)
-    //     .attr("value", 0)
-    //     .on("input", function () {
-    //         const selectedAge = +this.value;
-    //         const selectedMetric = d3.select("#metric-selector").node().value;
-    //         d3.select("#age-display").text(`Age Group: ${selectedAge}-${selectedAge + 9}`);
-    //         updateChart(selectedAge, selectedMetric);
-    //     });
-    
-    // d3.select("#slider-container").append("div").attr("id", "age-display").text("Age Group: 0-9");
-    
-    // d3.select("#metric-selector").on("change", function () {
-    //     const selectedAge = 0;
-    //     updateChart(selectedAge, this.value);
-    // });
 
     d3.select("#metric-selector").on("change", function () {
         //const selectedAge = 0;
