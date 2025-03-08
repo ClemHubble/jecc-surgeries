@@ -16,6 +16,16 @@ const pie = d3.pie().value(d => d.value);
 
 const legendContainer = d3.select("#main-chart").append("div").attr("class", "legend");
 
+const tooltip = d3.select("#main-chart")
+    .append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0)
+    .style("position", "absolute")
+    .style("background", "#fff")
+    .style("padding", "6px")
+    .style("border", "1px solid #ccc")
+    .style("border-radius", "4px");
+
 d3.csv("vitaldb_cases.csv").then(data => {
     data.forEach(d => {
         d.age = +d.age;
@@ -55,6 +65,24 @@ d3.csv("vitaldb_cases.csv").then(data => {
                 .attr("d", arc)
                 .attr("fill", d => d.data.color);
         
+            arcs.exit().remove();
+
+            svg.selectAll(".arc")
+                .on("mouseover", (event, d) => {
+                    tooltip.style("opacity", 1);
+                    const percent = ((d.data.value / total) * 100).toFixed(1);
+                    tooltip.html(`<strong>${d.data.label}:</strong> ${percent}%`)
+                        .style("left", event.pageX + "px")
+                        .style("top", event.pageY + "px");
+                })
+                .on("mousemove", (event) => {
+                    tooltip.style("left", event.pageX + "px")
+                           .style("top", event.pageY + "px");
+                })
+                .on("mouseout", () => {
+                    tooltip.style("opacity", 0);
+                });
+
             arcs.exit().remove();
     
             legendContainer.html("");
