@@ -16,6 +16,16 @@ const pie = d3.pie().value(d => d.value);
 
 const legendContainer = d3.select("#main-chart").append("div").attr("class", "legend");
 
+const tooltip = d3.select("#main-chart")
+    .append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0)
+    .style("position", "absolute")
+    .style("background", "#fff")
+    .style("padding", "6px")
+    .style("border", "1px solid #ccc")
+    .style("border-radius", "4px");
+
 d3.csv("vitaldb_cases.csv").then(data => {
     data.forEach(d => {
         d.age = +d.age;
@@ -47,37 +57,62 @@ d3.csv("vitaldb_cases.csv").then(data => {
         // for anesthesia type, mortality, and operation type
         function pieChart(categoryCounts) {
             svg.html("");
-            const arcs = svg.selectAll(".arc").data(pie(categoryCounts));
+
+            const total = d3.sum(categoryCounts, d => d.value);
+
+            const arcs = svg.selectAll(".arc")
+                .data(pie(categoryCounts));
+
             arcs.enter()
                 .append("path")
                 .attr("class", "arc")
                 .merge(arcs)
-                .transition().duration(500)
+                .transition()
+                .duration(500)
                 .attr("d", arc)
                 .attr("fill", d => d.data.color);
-        
+
             arcs.exit().remove();
-    
+
+            svg.selectAll(".arc")
+                .on("mouseover", (event, d) => {
+                    tooltip.style("opacity", 1);
+                    const percent = ((d.data.value / total) * 100).toFixed(1);
+                    tooltip.html(`<strong>${d.data.label}:</strong> ${percent}%`)
+                        .style("left", event.pageX + "px")
+                        .style("top", event.pageY + "px");
+                })
+                .on("mousemove", (event) => {
+                    tooltip.style("left", event.pageX + "px")
+                        .style("top", event.pageY + "px");
+                })
+                .on("mouseout", () => {
+                    tooltip.style("opacity", 0);
+                });
+
             legendContainer.html("");
             categoryCounts.forEach(d => {
                 const legendItem = legendContainer.append("div")
                     .style("display", "flex")
                     .style("align-items", "center")
                     .style("margin", "5px 0");
-        
+
                 legendItem.append("div")
                     .style("width", "20px")
                     .style("height", "20px")
                     .style("border-radius", "5px")
                     .style("background-color", d.color)
                     .style("margin-right", "10px");
-        
+
                 legendItem.append("span")
-                    .style("color", d.color) 
+                    .style("color", d.color)
                     .style("font-weight", "bold")
                     .text(d.label);
             });
         }
+
+    
+
 
         function updateBarChart(age) {
             svg.html("");
