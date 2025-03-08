@@ -177,6 +177,7 @@ d3.csv("vitaldb_cases.csv").then(data => {
     d3.select("#metric-selector").on("change", function () {
         //const selectedAge = 0;
         updateChart(0, this.value);
+        d3.select(".age-label").text("Age Group: 0-9");
     });
 
     function updateAgeGroup(newIndex) {
