@@ -8,14 +8,31 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Surgical Outcomes by Age Group</h1>
-
+    <h1>Surgical Statistics by Age Group</h1>
+    <h4>An exploration of how surgeries change as you get older</h4>
     <div class="dashboard">
         <div class="controls">
-            <h3>Filter by Age Group</h3>
+            <h3>Explore Each Age Group</h3>
             <div id="slider-container"></div>
 
-            <h3>Select Comparison</h3>
+            <div class = "age-label"></div>
+            <div class="buttons"> <!--onclick="history.back()" or onclick="history.forward() -->
+                <button class="back-button">
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                      <path d="M15 19l-7-7 7-7" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg> Back
+                  </button>
+                  
+                  <button class="forward-button">
+                    Forward 
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                      <path d="M9 5l7 7-7 7" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
+            </div>
+            
+
+            <h3>Select A Metric</h3>
             <div id="controls"></div>
         </div>
 

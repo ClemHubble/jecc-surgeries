@@ -1,5 +1,7 @@
 const width = 500, height = 500, radius = Math.min(width, height) / 2;
 
+let currentAgeIndex = 0;
+
 let svg = d3.select("#main-chart")
     .append("svg")
     .attr("width", width)
@@ -151,25 +153,53 @@ d3.csv("vitaldb_cases.csv").then(data => {
         .attr("value", d => d)
         .text(d => d === "mortality" ? "Mortality" : d === "optype" ? "Operation Type" : d === "ane_type" ? "Anesthesia Type" : "Count");
     
-    d3.select("#slider-container").append("input")
-        .attr("type", "range")
-        .attr("min", 0)
-        .attr("max", 90)
-        .attr("step", 10)
-        .attr("value", 0)
-        .on("input", function () {
-            const selectedAge = +this.value;
-            const selectedMetric = d3.select("#metric-selector").node().value;
-            d3.select("#age-display").text(`Age Group: ${selectedAge}-${selectedAge + 9}`);
-            updateChart(selectedAge, selectedMetric);
-        });
+
+    // d3.select("#slider-container").append("input")
+    //     .attr("type", "range")
+    //     .attr("min", 0)
+    //     .attr("max", 90)
+    //     .attr("step", 10)
+    //     .attr("value", 0)
+    //     .on("input", function () {
+    //         const selectedAge = +this.value;
+    //         const selectedMetric = d3.select("#metric-selector").node().value;
+    //         d3.select("#age-display").text(`Age Group: ${selectedAge}-${selectedAge + 9}`);
+    //         updateChart(selectedAge, selectedMetric);
+    //     });
     
-    d3.select("#slider-container").append("div").attr("id", "age-display").text("Age Group: 0-9");
+    // d3.select("#slider-container").append("div").attr("id", "age-display").text("Age Group: 0-9");
     
+    // d3.select("#metric-selector").on("change", function () {
+    //     const selectedAge = 0;
+    //     updateChart(selectedAge, this.value);
+    // });
+
     d3.select("#metric-selector").on("change", function () {
-        const selectedAge = +d3.select("#slider-container input").node().value;
-        updateChart(selectedAge, this.value);
+        //const selectedAge = 0;
+        updateChart(0, this.value);
+    });
+
+    function updateAgeGroup(newIndex) {
+        currentAgeIndex = Math.max(0, Math.min(newIndex, 9)); // Keep within bounds
+        const selectedAge = currentAgeIndex * 10;
+        const selectedMetric = d3.select("#metric-selector").node().value;
+    
+        d3.select(".age-label").text(`Age Group: ${selectedAge}-${selectedAge + 9}`);
+        updateChart(selectedAge, selectedMetric);
+    }
+    
+    // Attach event listeners to the buttons
+    document.querySelector(".back-button").addEventListener("click", function () {
+        updateAgeGroup(currentAgeIndex - 1); // Go back one age group
     });
     
-    updateChart(0, "mortality"); 
+    document.querySelector(".forward-button").addEventListener("click", function () {
+        updateAgeGroup(currentAgeIndex + 1); // Go forward one age group
+    });
+    
+    // Add age display text initially
+    d3.select(".age-label").text("Age Group: 0-9");
+    
+    // Initialize chart
+    updateChart(0, "mortality");
 });

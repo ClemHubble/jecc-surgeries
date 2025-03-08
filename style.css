@@ -36,3 +36,8 @@ select, button {
     padding: 5px; 
     width: 100%; 
 }
+
+.buttons {
+    display: flex;
+    gap: 20px;
+}
