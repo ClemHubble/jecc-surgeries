@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surgical Outcomes by Age Group</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Surgical Statistics by Age Group</h1>
+    <h4>An exploration of how surgeries change as you get older</h4>
+    <div class="dashboard">
+        <div class="controls">
+            <h3>Explore Each Age Group</h3>
+            <div id="slider-container"></div>
+
+            <div class = "age-label"></div>
+            <div class="buttons"> <!--onclick="history.back()" or onclick="history.forward() -->
+                <button class="back-button">
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                      <path d="M15 19l-7-7 7-7" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg> Back
+                  </button>
+                  
+                  <button class="forward-button">
+                    Forward 
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                      <path d="M9 5l7 7-7 7" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
+            </div>
+            
+
+            <h3>Select A Metric</h3>
+            <div id="controls"></div>
+        </div>
+
+        <div class="chart-container">
+            <h3>Comparison Chart</h3>
+            <div id="main-chart"></div>
+        </div>
+    </div>
+
+    <script src="main.js" type="module"></script>
+</body>
+</html>

@@ -1,47 +1,343 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Surgical Outcomes by Age Group</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <title>Surgical Outcomes Explorer</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
-    <h1>Surgical Statistics by Age Group</h1>
-    <h4>An exploration of how surgeries change as you get older</h4>
-    <div class="dashboard">
-        <div class="controls">
-            <h3>Explore Each Age Group</h3>
-            <div id="slider-container"></div>
+    <div class="progress-indicator">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
 
-            <div class = "age-label"></div>
-            <div class="buttons"> <!--onclick="history.back()" or onclick="history.forward() -->
-                <button class="back-button">
-                    <svg width="20" height="20" viewBox="0 0 24 24">
-                      <path d="M15 19l-7-7 7-7" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg> Back
-                  </button>
-                  
-                  <button class="forward-button">
-                    Forward 
-                    <svg width="20" height="20" viewBox="0 0 24 24">
-                      <path d="M9 5l7 7-7 7" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </button>
-            </div>
-            
-
-            <h3>Select A Metric</h3>
-            <div id="controls"></div>
+    <header>
+        <div class="container">
+            <h1>Surgical Outcomes Explorer</h1>
+            <div class="subtitle">Exploring patterns in the VitalDB dataset</div>
         </div>
+    </header>
 
-        <div class="chart-container">
-            <h3>Comparison Chart</h3>
-            <div id="main-chart"></div>
+    <div class="container">
+        <div class="scrollytelling-container">
+            <div class="sticky-container">
+                <div class="viz-section active" id="viz-profile">
+                    <div class="input-container">
+                        <div class="input-panel">
+                            <div class="input-title">
+                                <h2>Patient Profile</h2>
+                                <p>Adjust parameters to see predictions</p>
+                            </div>
+
+                            <div class="input-section highlight-section" id="demographics-section">
+                                <div class="input-group">
+                                    <label for="age">Age</label>
+                                    <input type="range" id="age" min="0" max="100" value="50">
+                                    <span class="slider-value" id="age-value">50</span> years
+                                </div>
+                                <div class="input-group">
+                                    <label for="sex">Sex</label>
+                                    <select id="sex">
+                                        <option value="M">Male</option>
+                                        <option value="F">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="input-section highlight-section" id="health-section">
+                                <div class="input-group">
+                                    <label for="asa">ASA Status</label>
+                                    <select id="asa">
+                                        <option value="1">1 - Normal healthy</option>
+                                        <option value="2">2 - Mild disease</option>
+                                        <option value="3">3 - Severe disease</option>
+                                        <option value="4">4 - Life-threatening</option>
+                                        <option value="5">5 - Moribund</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="input-section highlight-section" id="physical-section">
+                                <div class="input-group">
+                                    <label for="height">Height (cm)</label>
+                                    <input type="range" id="height" min="100" max="220" value="170">
+                                    <span class="slider-value" id="height-value">170</span> cm
+                                </div>
+                                <div class="input-group">
+                                    <label for="weight">Weight (kg)</label>
+                                    <input type="range" id="weight" min="30" max="150" value="70">
+                                    <span class="slider-value" id="weight-value">70</span> kg
+                                </div>
+                                <div class="input-group">
+                                    <label>BMI</label>
+                                    <span id="bmi-value">24.2</span> kg/m<sup>2</sup>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="viz-container">
+                        <div class="results-panel">
+                            <div class="results-title">
+                                <h2>Your Surgical Profile</h2>
+                                <p>Predictions based on similar patients</p>
+                            </div>
+                            <div class="results-content" id="profile-results">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="viz-section" id="viz-dimensions">
+                    <div class="input-container">
+                        <div class="filter-panel">
+                            <div class="input-title">
+                                <h2>Surgical Dimensions Explorer</h2>
+                                <p>Choose any dimensions to explore</p>
+                            </div>
+
+                            <div class="filter-section highlight-section" id="dimensions-section">
+                                <div class="filter-group">
+                                    <label for="x-axis">X-Axis Dimension</label>
+                                    <select id="x-axis">
+                                        <option value="duration" selected>Surgery Duration</option>
+                                        <option value="bmi">BMI</option>
+                                        <option value="ebl">Blood Loss</option>
+                                        <option value="icu">ICU Days</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="y-axis">Y-Axis Dimension</label>
+                                    <select id="y-axis">
+                                        <option value="ebl" selected>Blood Loss</option>
+                                        <option value="bmi">BMI</option>
+                                        <option value="duration">Surgery Duration</option>
+                                        <option value="icu">ICU Days</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="color-by">Color By</label>
+                                    <select id="color-by">
+                                        <option value="asa" selected>ASA Score</option>
+                                        <option value="none">None</option>
+                                        <option value="department">Department</option>
+                                        <option value="approach">Surgical Approach</option>
+                                        <option value="age">Age</option>
+                                        <option value="bmi">BMI</option>
+                                        <option value="ebl">Blood Loss</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="size-by">Size By</label>
+                                    <select id="size-by">
+                                        <option value="icu" selected>ICU Days</option>
+                                        <option value="none">None</option>
+                                        <option value="ebl">Blood Loss</option>
+                                        <option value="duration">Surgery Duration</option>
+                                        <option value="age">Age</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="filter-section highlight-section" id="age-filter-section">
+                                <div class="filter-group">
+                                    <label>Age Range Filter</label>
+                                    <div class="range-slider">
+                                        <input type="range" id="age-range-min" min="0" max="100" value="0">
+                                        <input type="range" id="age-range-max" min="0" max="100" value="100">
+                                    </div>
+                                    <div class="range-values">
+                                        <span id="age-min-display">0</span>
+                                        <span id="age-max-display">100</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="stats-summary">
+                                <div class="stats-title">Current Selection</div>
+                                <div class="stats-grid">
+                                    <div class="stat-item">
+                                        <span class="stat-value" id="selected-count">0</span>
+                                        <span class="stat-label">Patients</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value" id="selected-age">0</span>
+                                        <span class="stat-label">Avg. Age</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value" id="selected-duration">0m</span>
+                                        <span class="stat-label">Avg. Duration</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value" id="selected-mortality">0%</span>
+                                        <span class="stat-label">Mortality Rate</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="viz-container">
+                        <div class="chart-panel">
+                            <div class="chart-title">
+                                <h2>Multidimensional Surgical Explorer</h2>
+                                <p>Each point represents a patient surgery</p>
+                            </div>
+                            <div class="chart-area">
+                                <div class="chart-container" id="dimensions-chart"></div>
+                                <div class="tooltip" style="opacity: 0;"></div>
+                            </div>
+                            <div id="dimension-legend" class="chart-legend">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-container">
+                <section class="text-section" data-viz="viz-profile" data-highlight="demographics-section">
+                    <h2>Who Needs Surgery?</h2>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce bibendum, mi nec sagittis
+                        faucibus, felis enim tincidunt mi, at rhoncus urna nulla non dui. Donec imperdiet lacus a enim
+                        ultrices, vel malesuada lorem lobortis.</p>
+                    <p>Aenean laoreet, augue nec fermentum varius, est massa interdum magna, sit amet volutpat purus
+                        felis eget sem. Ut suscipit dui eget nisi molestie, vitae volutpat dui ultricies.</p>
+                    <p>The risk of needing surgery varies significantly with age. In early childhood, common surgeries
+                        include tonsillectomies and appendectomies. In middle age, gallbladder removal and joint repairs
+                        become prevalent. Elderly patients often need cardiac or cancer-related surgeries.</p>
+                    <p>Sex also plays a role in surgical needs. Women may require gynecological procedures, while men
+                        face higher rates of certain cardiovascular surgeries.</p>
+                    <p>Donec vehicula dignissim nibh, non commodo dolor sollicitudin sed. Ut sit amet fermentum est.
+                        Donec porta vestibulum turpis a ultricies. Sed vel dolor non risus faucibus tempus.</p>
+                </section>
+
+                <section class="text-section" data-viz="viz-profile" data-highlight="health-section">
+                    <h2>Your Personal Risk Factors</h2>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam a mi vel magna vehicula pulvinar.
+                        Donec facilisis nunc nec orci finibus, sit amet ultrices dui faucibus. Donec quis eleifend orci.
+                    </p>
+                    <p>The ASA Physical Status Classification System is a critical tool used by anesthesiologists to
+                        assess a patient's pre-operative health. This score greatly influences surgical approach,
+                        anesthesia selection, and post-operative care planning.</p>
+                    <p>Nulla facilisi. Sed sit amet enim orci. Ut eu risus et ex tincidunt egestas. Sed dictum luctus
+                        enim, vel volutpat dolor ultrices ut. Donec gravida orci vitae nulla faucibus venenatis.</p>
+                    <p>Patients with higher ASA scores generally face increased risks during surgery, longer hospital
+                        stays, and higher rates of complications. Proper pre-operative assessment and preparation are
+                        essential for these higher-risk patients.</p>
+                    <p>Suspendisse non mauris nisi. Aenean convallis ultrices ipsum, nec aliquet risus commodo a. Nulla
+                        at semper nulla. Etiam eget nulla sit amet sem ultricies pharetra.</p>
+                </section>
+
+                <section class="text-section" data-viz="viz-profile" data-highlight="physical-section">
+                    <h2>Physical Characteristics and Surgical Outcomes</h2>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent euismod arcu sit amet ipsum
+                        vulputate, at finibus arcu pellentesque. Duis eleifend imperdiet purus, nec dignissim metus.</p>
+                    <p>Body mass index (BMI) is a significant factor in surgical planning and outcomes. Patients with
+                        very high or very low BMI present unique challenges during surgery and may experience different
+                        recovery trajectories.</p>
+                    <p>Height and weight measurements help surgeons select appropriate equipment, determine medication
+                        dosages, and anticipate potential complications. Patients with extreme measurements may require
+                        special considerations.</p>
+                    <p>Cras vitae sapien non sem egestas bibendum. Ut id tellus odio. Praesent et magna non dui suscipit
+                        ullamcorper id et nibh. Etiam ut finibus ipsum. Sed tincidunt molestie sapien, ac ultricies
+                        purus suscipit id.</p>
+                    <p>Duis interdum nunc ut tempor faucibus. Praesent ut luctus sapien. Donec mollis nibh sem, vel
+                        dictum sapien commodo a. Pellentesque consectetur ex ut dolor scelerisque, id porttitor ex
+                        varius.</p>
+                </section>
+
+                <section class="text-section" data-viz="viz-profile">
+                    <h2>Making Informed Decisions</h2>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce condimentum diam non odio sodales,
+                        quis feugiat odio lacinia. Fusce euismod tellus et porta venenatis.</p>
+                    <p>Understanding your personal surgical risk profile can help you make better healthcare decisions.
+                        By knowing which surgeries are more common for people with your characteristics, you can be more
+                        proactive about preventive care and early intervention.</p>
+                    <p>The data shows that early detection and intervention often lead to less invasive surgical
+                        approaches and better outcomes. Regular health screenings become increasingly important as risk
+                        factors accumulate.</p>
+                    <p>Sed aliquet mauris a nulla sagittis, nec feugiat tellus aliquet. Aenean nec justo eget odio
+                        finibus euismod. In hac habitasse platea dictumst. In vel enim ut felis pretium condimentum vel
+                        eget nibh.</p>
+                    <p>Nullam vitae erat in purus molestie convallis vitae in nibh. Mauris quis aliquet magna. Duis quis
+                        efficitur felis, ac ornare ex. Sed suscipit lorem sed nulla consectetur, sed lacinia magna
+                        bibendum.</p>
+                </section>
+
+                <div class="transition-marker">
+                    <div class="transition-label">Multidimensional Surgical Explorer</div>
+                </div>
+
+                <section class="text-section" data-viz="viz-dimensions" data-highlight="dimensions-section">
+                    <h2>Exploring Multiple Dimensions</h2>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce bibendum, mi nec sagittis
+                        faucibus, felis enim tincidunt mi, at rhoncus urna nulla non dui. Donec imperdiet lacus a enim
+                        ultrices, vel malesuada lorem lobortis.</p>
+                    <p>Surgical outcomes are influenced by numerous interconnected factors. Using this multidimensional
+                        explorer, you can investigate relationships between different metrics that wouldn't be apparent
+                        in simple visualizations.</p>
+                    <p>Think of the data as a multi-dimensional space, where each dimension represents a different
+                        surgical variable. Using the selectors on the left, you can choose which "slice" of this space
+                        to view, revealing patterns that might otherwise remain hidden.</p>
+                    <p>Try different combinations of dimensions for the X and Y axes. For example, examine how blood
+                        loss relates to surgery duration, or how BMI affects hospital stays across different
+                        departments.</p>
+                </section>
+
+                <section class="text-section" data-viz="viz-dimensions" data-highlight="age-filter-section">
+                    <h2>Age as a Filtering Dimension</h2>
+                    <p>Instead of using age as a fixed axis, this visualization allows you to use it as a "slice
+                        selector" - filtering the dataset to focus on specific age ranges.</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam a mi vel magna vehicula pulvinar.
+                        Donec facilisis nunc nec orci finibus, sit amet ultrices dui faucibus. Donec quis eleifend orci.
+                    </p>
+                    <p>As you adjust the age range slider, observe how the relationships between other variables change.
+                        For instance, a correlation between surgery duration and hospital stay might be stronger in
+                        older patients than younger ones.</p>
+                    <p>This approach demonstrates the "slice of bread" concept - viewing a 2D slice of a
+                        higher-dimensional dataset, with age as the dimension you're slicing through.</p>
+                    <p>Try narrowing the age range to focus on specific groups like pediatric patients (0-18),
+                        middle-aged adults (40-60), or elderly patients (70+).</p>
+                </section>
+
+                <section class="text-section" data-viz="viz-dimensions">
+                    <h2>Visual Encoding of Multiple Dimensions</h2>
+                    <p>This visualization encodes up to four dimensions simultaneously: X-axis, Y-axis, color, and point
+                        size. This allows you to explore complex relationships that simple charts can't capture.</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce condimentum diam non odio sodales,
+                        quis feugiat odio lacinia. Fusce euismod tellus et porta venenatis.</p>
+                    <p>For example, you might plot BMI against hospital stay, with points colored by ASA score and sized
+                        by blood loss. This reveals how these four factors interact in determining surgical outcomes.
+                    </p>
+                    <p>Pay special attention to clusters of points and outliers - these often represent interesting
+                        patterns or exceptional cases worth investigating further.</p>
+                    <p>The black outline on some points indicates mortality cases. Notice how these cases distribute
+                        across the different dimensions, potentially revealing combinations of factors associated with
+                        higher risk.</p>
+                </section>
+            </div>
         </div>
     </div>
 
-    <script src="main.js" type="module"></script>
+    <footer>
+        <div class="container">
+            <p>VitalDB Surgical Outcomes Explorer - Final Project for DSC 106</p>
+        </div>
+    </footer>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <script src="js/utils/formatters.js"></script>
+    <script src="js/utils/dataProcessor.js"></script>
+    <script src="js/core/dataService.js"></script>
+    <script src="js/core/scrollManager.js"></script>
+
+    <script src="js/components/patientProfile.js"></script>
+    <script src="js/components/dimensionsExplorer.js"></script>
+
+    <script src="js/app.js"></script>
 </body>
+
 </html>
