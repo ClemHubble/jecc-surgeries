@@ -10,7 +10,8 @@ class DimensionsExplorer {
       d3.select("body")
         .append("div")
         .attr("class", "tooltip")
-        .style("opacity", 0);
+        .style("opacity", 0)
+        .style("position", "fixed");
     }
 
     this.elements = {
@@ -22,6 +23,8 @@ class DimensionsExplorer {
       ageMax: document.getElementById("age-max"),
       ageRangeMin: document.getElementById("age-range-min"),
       ageRangeMax: document.getElementById("age-range-max"),
+      agePresetButtons: document.querySelectorAll(".preset-btn"),
+      activePreset: null,
       legend: document.getElementById("dimension-legend"),
       stats: {
         count: document.getElementById("selected-count"),
@@ -186,6 +189,7 @@ class DimensionsExplorer {
           this.elements.ageRangeMax.value = minValue;
         }
 
+        this.clearActivePreset();
         this.handleFiltersChange();
       });
 
@@ -200,6 +204,7 @@ class DimensionsExplorer {
           this.elements.ageRangeMin.value = maxValue;
         }
 
+        this.clearActivePreset();
         this.handleFiltersChange();
       });
 
@@ -214,6 +219,7 @@ class DimensionsExplorer {
           this.elements.ageRangeMax.value = minValue;
         }
 
+        this.clearActivePreset();
         this.handleFiltersChange();
       });
 
@@ -228,8 +234,55 @@ class DimensionsExplorer {
           this.elements.ageRangeMin.value = maxValue;
         }
 
+        this.clearActivePreset();
         this.handleFiltersChange();
       });
+    }
+
+    if (this.elements.agePresetButtons && this.elements.agePresetButtons.length > 0) {
+      this.elements.agePresetButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const min = parseInt(btn.dataset.min);
+          const max = parseInt(btn.dataset.max);
+          
+          if (btn.classList.contains('active')) {
+            this.clearActivePreset();
+            this.setAgeRange(0, 100);
+          } else {
+            this.clearActivePreset();
+            
+            btn.classList.add('active');
+            this.elements.activePreset = btn;
+            
+            this.setAgeRange(min, max);
+          }
+          
+          this.handleFiltersChange();
+        });
+      });
+    }
+  }
+
+  clearActivePreset() {
+    if (this.elements.agePresetButtons && this.elements.agePresetButtons.length > 0) {
+      this.elements.agePresetButtons.forEach(btn => {
+        btn.classList.remove('active');
+      });
+      this.elements.activePreset = null;
+    }
+  }
+
+  setAgeRange(min, max) {
+    if (
+      this.elements.ageMin &&
+      this.elements.ageMax &&
+      this.elements.ageRangeMin &&
+      this.elements.ageRangeMax
+    ) {
+      this.elements.ageMin.value = min;
+      this.elements.ageMax.value = max;
+      this.elements.ageRangeMin.value = min;
+      this.elements.ageRangeMax.value = max;
     }
   }
 
@@ -302,6 +355,9 @@ class DimensionsExplorer {
 
   updateChart() {
     if (!dataService.isLoaded) return;
+
+    // Remove any existing no-data message first
+    this.chart.svg.selectAll(".no-data-text").remove();
 
     const xAxis = this.elements.xAxis.value;
     const yAxis = this.elements.yAxis.value;
@@ -477,13 +533,7 @@ class DimensionsExplorer {
 
   showTooltip(event, d, xAxis, yAxis, colorBy, sizeBy) {
     const tooltip = d3.select("body .tooltip");
-    const tooltipNode = tooltip.node();
-
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-
-    const chartRect = this.chartContainer.getBoundingClientRect();
-
+    
     tooltip.transition().duration(200).style("opacity", 0.9);
 
     let tooltipContent = `
@@ -530,44 +580,53 @@ class DimensionsExplorer {
     }</div>`;
 
     tooltip.html(tooltipContent);
-
-    const tooltipWidth = tooltipNode.offsetWidth;
-    const tooltipHeight = tooltipNode.offsetHeight;
-
-    let left = event.clientX + 10;
-    let top = event.clientY - 10;
-
-    if (left + tooltipWidth > viewportWidth) {
-      left = event.clientX - tooltipWidth - 10;
-    }
-
-    if (top + tooltipHeight > viewportHeight) {
-      top = event.clientY - tooltipHeight - 10;
-    }
-
-    tooltip.style("left", left + "px").style("top", top + "px");
+    
+    // Position tooltip after content is set so we get correct dimensions
+    this.positionTooltip(event);
   }
 
   moveTooltip(event) {
+    this.positionTooltip(event);
+  }
+  
+  positionTooltip(event) {
     const tooltip = d3.select("body .tooltip");
     const tooltipNode = tooltip.node();
+    
+    // Get viewport dimensions
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
+    
+    // Get tooltip dimensions
     const tooltipWidth = tooltipNode.offsetWidth;
     const tooltipHeight = tooltipNode.offsetHeight;
-
-    let left = event.clientX + 10;
-    let top = event.clientY - 10;
-
-    if (left + tooltipWidth > viewportWidth) {
-      left = event.clientX - tooltipWidth - 10;
+    
+    // Default position is to the right of the cursor, aligned with cursor vertical position
+    let left = event.clientX + 15;
+    let top = event.clientY;
+    
+    // If tooltip would go off right edge, position to the left of cursor
+    if (left + tooltipWidth > viewportWidth - 20) {
+      left = event.clientX - tooltipWidth - 15;
     }
-
-    if (top + tooltipHeight > viewportHeight) {
-      top = event.clientY - tooltipHeight - 10;
+    
+    // If tooltip would go off bottom edge, position above cursor
+    if (top + tooltipHeight > viewportHeight - 20) {
+      top = event.clientY - tooltipHeight;
     }
-
-    tooltip.style("left", left + "px").style("top", top + "px");
+    
+    // If tooltip would go off left edge (after right edge adjustment), align with left edge of screen with padding
+    if (left < 10) {
+      left = 10;
+    }
+    
+    // If tooltip would go off top edge (after bottom edge adjustment), align with top edge of screen with padding
+    if (top < 10) {
+      top = 10;
+    }
+    
+    // Apply the calculated position - forcing pixel units
+    tooltip.style("left", `${Math.round(left)}px`).style("top", `${Math.round(top)}px`);
   }
 
   hideTooltip() {
@@ -724,8 +783,13 @@ class DimensionsExplorer {
   }
 
   showNoDataMessage() {
+    // Remove any existing points
     this.chart.pointsGroup.selectAll("*").remove();
 
+    // Remove any existing no-data message first
+    this.chart.svg.selectAll(".no-data-text").remove();
+
+    // Add the no-data message
     const noDataMessage = this.chart.svg
       .append("text")
       .attr("class", "no-data-text")
