@@ -671,61 +671,90 @@ class DimensionsExplorer {
         const gradientContainer = colorSection
           .append("div")
           .style("width", "100%")
-          .style("max-width", "300px")
-          .style("margin-top", "8px");
-          
+          .style("margin-top", "var(--space-3)")
+          .style("margin-bottom", "var(--space-4)")
+          .style("display", "flex")
+          .style("flex-direction", "column")
+          .style("align-items", "center")
+          .style("justify-content", "center");
+
         const gradient = gradientContainer
           .append("div")
           .attr("class", "legend-gradient");
 
+        // Calculate the width for each step based on the number of buckets
+        const stepWidth = 100 / numBuckets;
+        
         for (let i = 0; i < numBuckets; i++) {
           const value = min + (i / (numBuckets - 1)) * (max - min);
           gradient
             .append("div")
             .attr("class", "gradient-step")
-            .style("background-color", this.chart.colorScale(value));
+            .style("background-color", this.chart.colorScale(value))
+            .style("width", `${stepWidth}%`)
+            .style("left", `${i * stepWidth}%`);
         }
         
         const gradientLabels = gradientContainer
           .append("div")
           .attr("class", "gradient-labels");
           
+        // Create label for min (left)
         gradientLabels
           .append("div")
           .attr("class", "gradient-label")
+          .style("left", "0")
           .text(Formatters.formatValue(min, dimension));
         
+        // Create label for max (right)
         gradientLabels
           .append("div")
           .attr("class", "gradient-label")
-          .text(Formatters.formatValue(min + (max - min) / 2, dimension));
-        
-        gradientLabels
-          .append("div")
-          .attr("class", "gradient-label")
+          .style("left", "100%")
           .text(Formatters.formatValue(max, dimension));
+        
+        // Add more labels based on the number of buckets
+        if (numBuckets >= 5) {
+          // Add 25%, 50%, and 75% labels
+          gradientLabels
+            .append("div")
+            .attr("class", "gradient-label")
+            .style("left", "25%")
+            .text(Formatters.formatValue(min + (max - min) * 0.25, dimension));
+            
+          gradientLabels
+            .append("div")
+            .attr("class", "gradient-label")
+            .style("left", "50%")
+            .text(Formatters.formatValue(min + (max - min) * 0.5, dimension));
+            
+            gradientLabels
+              .append("div")
+              .attr("class", "gradient-label")
+              .style("left", "75%")
+              .text(Formatters.formatValue(min + (max - min) * 0.75, dimension));
+        } else if (numBuckets >= 3) {
+          // Just add the middle label
+          gradientLabels
+            .append("div")
+            .attr("class", "gradient-label")
+            .style("left", "50%")
+            .text(Formatters.formatValue(min + (max - min) * 0.5, dimension));
+        }
       }
     }
   }
 
   showNoDataMessage() {
     this.chart.pointsGroup.selectAll("*").remove();
-
-    this.chart.pointsGroup
+    
+    const noDataMessage = this.chart.svg
       .append("text")
-      .attr("class", "no-data-msg")
-      .attr(
-        "x",
-        (this.chart.width - this.chart.margin.left - this.chart.margin.right) /
-          2
-      )
-      .attr(
-        "y",
-        (this.chart.height - this.chart.margin.top - this.chart.margin.bottom) /
-          2
-      )
+      .attr("class", "no-data-text")
       .attr("text-anchor", "middle")
-      .text("No data available for the current selection");
+      .attr("x", (this.chart.width - this.chart.margin.left - this.chart.margin.right) / 2)
+      .attr("y", (this.chart.height - this.chart.margin.top - this.chart.margin.bottom) / 2)
+      .text("No data available for the current filter settings");
   }
 
   updateStats(data) {

@@ -82,10 +82,6 @@
 
                     <div class="viz-container">
                         <div class="results-panel">
-                            <div class="results-title">
-                                <h2>Your Surgical Profile</h2>
-                                <p>Predictions based on similar patients</p>
-                            </div>
                             <div class="results-content" id="profile-results">
                             </div>
                         </div>
@@ -106,8 +102,8 @@
                                     <select id="x-axis">
                                         <option value="bmi">BMI</option>
                                         <option value="ebl">Blood Loss</option>
-                                        <option value="duration" selected>Surgery Duration</option>
                                         <option value="icu">ICU Days</option>
+                                        <option value="duration" selected>Surgery Duration</option>
                                     </select>
                                 </div>
                                 <div class="filter-group">
@@ -115,8 +111,8 @@
                                     <select id="y-axis">
                                         <option value="bmi" selected>BMI</option>
                                         <option value="ebl">Blood Loss</option>
-                                        <option value="duration">Surgery Duration</option>
                                         <option value="icu">ICU Days</option>
+                                        <option value="duration">Surgery Duration</option>
                                     </select>
                                 </div>
                                 <div class="filter-group">
@@ -174,7 +170,11 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
 
+                    <div class="viz-container">
+                        <div class="chart-panel">
                             <div class="stats-summary">
                                 <div class="stats-title">Current Selection</div>
                                 <div class="stats-grid">
@@ -196,18 +196,10 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="viz-container">
-                        <div class="chart-panel">
-                            <div class="chart-title">
-                                <h2>Multidimensional Surgical Explorer</h2>
-                                <p>Each point represents a patient surgery</p>
-                            </div>
+                            
                             <div class="chart-area">
                                 <div class="chart-container" id="dimensions-chart"></div>
-                                <div class="tooltip" style="opacity: 0;"></div>
+                                <div class="tooltip"></div>
                             </div>
                             <div id="dimension-legend" class="chart-legend">
                             </div>

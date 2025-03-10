@@ -34,13 +34,6 @@ class App {
   showErrorMessage(message) {
     const errorElement = document.createElement("div");
     errorElement.className = "error-message";
-    errorElement.style.backgroundColor = "#ffeeee";
-    errorElement.style.color = "#cc0000";
-    errorElement.style.padding = "1rem";
-    errorElement.style.margin = "1rem";
-    errorElement.style.borderRadius = "8px";
-    errorElement.style.textAlign = "center";
-    errorElement.style.fontWeight = "bold";
     errorElement.textContent = message;
 
     const container = document.querySelector(".container");
