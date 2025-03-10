@@ -36,7 +36,9 @@ const DataProcessor = {
   },
 
   getSimilarProfiles(data, params) {
-    const bmi = params.weight / ((params.height / 100) * (params.height / 100));
+    // Calculate BMI only if both height and weight are provided
+    const bmi = params.height && params.weight ? 
+      params.weight / ((params.height / 100) * (params.height / 100)) : null;
 
     const filters = [
       { ageRange: 2, bmiRange: 5, requireASA: true },
@@ -44,7 +46,7 @@ const DataProcessor = {
       { ageRange: 8, bmiRange: 10, requireASA: true },
       { ageRange: 10, bmiRange: 15, requireASA: true },
       { ageRange: 10, bmiRange: 20, requireASA: true },
-      { ageRange: 10, bmiRange: 25, requireASA: true }
+      { ageRange: 10, bmiRange: 25, requireASA: false } // Last level doesn't require ASA match
     ];
 
     // Save all results for each filter level
@@ -52,16 +54,31 @@ const DataProcessor = {
 
     for (const filter of filters) {
       const filtered = data.filter((d) => {
-        if (!d.age || !d.sex) return false;
-
-        return (
-          d.age >= params.age - filter.ageRange &&
-          d.age <= params.age + filter.ageRange &&
-          d.sex === params.sex &&
-          (filter.requireASA ? d.asa === params.asa : true) &&
-          (!filter.bmiRange ||
-            (d.bmi >= bmi - filter.bmiRange && d.bmi <= bmi + filter.bmiRange))
-        );
+        if (!d.age) return false;
+        
+        // Handle basic age filter
+        const ageMatch = d.age >= params.age - filter.ageRange && 
+                         d.age <= params.age + filter.ageRange;
+        if (!ageMatch) return false;
+        
+        // Handle sex filter (allowing "all" option)
+        const sexMatch = params.sex === 'all' || d.sex === params.sex;
+        if (!sexMatch) return false;
+        
+        // Handle ASA filter (allowing "any" option)
+        const asaMatch = params.asa === 'any' || 
+                         !filter.requireASA || 
+                         d.asa === parseInt(params.asa);
+        if (!asaMatch) return false;
+        
+        // Handle BMI filter (if both height and weight are being used)
+        if (bmi !== null && filter.bmiRange) {
+          const bmiMatch = d.bmi >= bmi - filter.bmiRange && 
+                           d.bmi <= bmi + filter.bmiRange;
+          if (!bmiMatch) return false;
+        }
+        
+        return true;
       });
 
       // Save the current filter results
@@ -75,8 +92,7 @@ const DataProcessor = {
     }
 
     // If we've reached this point, we didn't find enough matches at any filter level
-    // Instead of returning all data filtered by sex, return the results from the most 
-    // lenient filter that had at least one match
+    // Return the results from the most lenient filter that had at least one match
     const bestResult = allResults
       .filter(result => result.count > 0)
       .sort((a, b) => b.count - a.count)[0];
@@ -85,7 +101,7 @@ const DataProcessor = {
       return bestResult.data;
     }
     
-    // If no matches at all, return empty array instead of falling back to the entire dataset
+    // If no matches at all, return empty array
     return [];
   },
 

@@ -46,7 +46,7 @@ body {
     line-height: 1.6;
     color: var(--foreground);
     background-color: var(--background);
-    overflow-x: hidden;
+    overflow-x: auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-weight: 400;
@@ -66,6 +66,7 @@ code, pre, .mono {
     max-width: 1600px;
     margin: 0 auto;
     padding: 0 1rem;
+    min-width: 1200px;
 }
 
 /* Header Styles */
@@ -144,13 +145,16 @@ small {
     display: flex;
     margin: 2rem 0;
     min-height: 0;
+    flex-direction: row-reverse; /* Reversed to put sticky on right */
+    min-width: 1200px; /* Force minimum width to prevent mobile collapse */
+    width: 100%;
 }
 
 /* Sticky columns (1 & 2) */
 .sticky-container {
     position: sticky;
     top: 1rem;
-    width: 66.66%; /* First two columns together */
+    width: 60%; /* First two columns together */
     height: calc(100vh - 2rem);
     display: flex;
     flex-shrink: 0;
@@ -159,7 +163,7 @@ small {
 
 /* Column 1: Inputs/Filters */
 .input-container {
-    width: 50%;
+    width: 40%;
     height: 100%;
     padding: 1rem;
     overflow: auto;
@@ -169,7 +173,7 @@ small {
 
 /* Column 2: Visualization Results */
 .viz-container {
-    width: 50%;
+    width: 60%;
     height: 100%;
     padding: 1rem;
     overflow: auto;
@@ -179,8 +183,9 @@ small {
 
 /* Column 3: Scrollable text */
 .text-container {
-    width: 33.33%;
+    width: 40%;
     padding-bottom: 50vh;
+    padding-right: 1.5rem;
 }
 
 /* Visualization sections */
@@ -374,6 +379,7 @@ small {
 
 .age-range-inputs {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
@@ -772,45 +778,8 @@ footer {
     border-top: 1px solid var(--border);
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
-    .scrollytelling-container {
-        flex-direction: column;
-    }
-    
-    .sticky-container {
-        position: relative;
-        width: 100%;
-        height: auto;
-        flex-direction: column;
-        max-height: none;
-        overflow: visible;
-    }
-    
-    .input-container, .viz-container {
-        width: 100%;
-        height: auto;
-        max-height: none;
-        margin-bottom: 1rem;
-    }
-    
-    .text-container {
-        width: 100%;
-    }
-    
-    .text-section {
-        min-height: auto;
-    }
-    
-    .input-panel, .filter-panel, .results-panel, .chart-panel {
-        height: auto;
-        max-height: 70vh;
-        overflow: auto;
-    }
-}
-
-/* Smaller screens */
-@media (max-width: 768px) {
+/* Smaller screens - removed to force horizontal scrolling instead */
+/* @media (max-width: 768px) {
     .container {
         padding: 0 0.5rem;
     }
@@ -830,9 +799,38 @@ footer {
     .input-section, .filter-section, .results-content, .chart-area {
         padding: 0.75rem;
     }
-}
+} */
 
 .chart-panel {
     display: grid;
     grid-template-rows: auto 1fr auto;
+}
+
+/* Filter Options */
+.filter-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed var(--border);
+}
+
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-checkbox input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--primary);
+}
+
+.filter-checkbox label {
+    font-size: 0.85rem;
+    color: var(--foreground);
+    font-weight: 500;
+    margin: 0;
 }

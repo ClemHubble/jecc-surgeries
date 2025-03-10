@@ -16,6 +16,8 @@ class PatientProfile {
       weight: document.getElementById("weight"),
       weightValue: document.getElementById("weight-value"),
       bmiValue: document.getElementById("bmi-value"),
+      filterHeight: document.getElementById("filter-height"),
+      filterWeight: document.getElementById("filter-weight"),
     };
 
     this.updateProfile = this.updateProfile.bind(this);
@@ -52,6 +54,21 @@ class PatientProfile {
         dropdown.addEventListener("change", this.handleInputChange);
       }
     });
+    
+    // Add event listeners for the filter checkboxes
+    ["filterHeight", "filterWeight"].forEach((id) => {
+      const checkbox = this.controls[id];
+      if (checkbox) {
+        checkbox.addEventListener("change", () => {
+          // Enable/disable the corresponding slider when checkbox changes
+          const controlName = id.replace("filter", "").toLowerCase();
+          this.controls[controlName].disabled = !checkbox.checked;
+          
+          // Update profile with new filter settings
+          this.handleInputChange();
+        });
+      }
+    });
   }
 
   calculateBMI() {
@@ -71,9 +88,9 @@ class PatientProfile {
     const params = {
       age: parseInt(this.controls.age.value),
       sex: this.controls.sex.value,
-      asa: parseInt(this.controls.asa.value),
-      height: parseInt(this.controls.height.value),
-      weight: parseInt(this.controls.weight.value),
+      asa: this.controls.asa.value,
+      height: this.controls.filterHeight.checked ? parseInt(this.controls.height.value) : null,
+      weight: this.controls.filterWeight.checked ? parseInt(this.controls.weight.value) : null,
     };
 
     const similarProfiles = dataService.getProfileData(params);
@@ -492,8 +509,8 @@ class PatientProfile {
       }))
       .sort((a, b) => b.count - a.count);
 
-    const width = 320;
-    const height = 220;
+    const width = 125;
+    const height = 125;
     const radius = Math.min(width, height) / 2;
     
     const chartContainer = document.createElement("div");
@@ -504,7 +521,7 @@ class PatientProfile {
 
     const svgContainer = document.createElement("div");
     svgContainer.style.flex = "1";
-    svgContainer.style.minWidth = "220px";
+    svgContainer.style.minWidth = "125px";
     chartContainer.appendChild(svgContainer);
 
     const svg = d3
@@ -582,7 +599,7 @@ class PatientProfile {
       .append("text")
       .attr("text-anchor", "middle")
       .attr("dy", "-0.2em")
-      .attr("font-size", "1.5rem")
+      .attr("font-size", "1rem")
       .attr("font-weight", "bold")
       .attr("fill", "var(--foreground)")
       .text(`${total}`);
@@ -591,7 +608,7 @@ class PatientProfile {
       .append("text")
       .attr("text-anchor", "middle")
       .attr("dy", "1.2em")
-      .attr("font-size", "0.9rem")
+      .attr("font-size", "0.75rem")
       .attr("fill", "var(--muted-foreground)")
       .text("surgeries");
 

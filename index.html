@@ -44,6 +44,7 @@
                                 <div class="input-group">
                                     <label for="sex">Sex</label>
                                     <select id="sex">
+                                        <option value="all">All/Both</option>
                                         <option value="M">Male</option>
                                         <option value="F">Female</option>
                                     </select>
@@ -54,6 +55,7 @@
                                 <div class="input-group">
                                     <label for="asa">ASA Status</label>
                                     <select id="asa">
+                                        <option value="any">Any</option>
                                         <option value="1">1 - Normal healthy</option>
                                         <option value="2">2 - Mild disease</option>
                                         <option value="3">3 - Severe disease</option>
@@ -64,6 +66,16 @@
                             </div>
 
                             <div class="input-section highlight-section" id="physical-section">
+                                <div class="filter-options">
+                                    <div class="filter-checkbox">
+                                        <input type="checkbox" id="filter-height" checked>
+                                        <label for="filter-height">Filter by height</label>
+                                    </div>
+                                    <div class="filter-checkbox">
+                                        <input type="checkbox" id="filter-weight" checked>
+                                        <label for="filter-weight">Filter by weight</label>
+                                    </div>
+                                </div>
                                 <div class="input-group">
                                     <label for="height">Height (cm)</label>
                                     <input type="range" id="height" min="100" max="220" value="170">
