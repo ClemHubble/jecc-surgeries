@@ -2,6 +2,7 @@ class App {
   constructor() {
     this.patientProfile = null;
     this.dimensionsExplorer = null;
+    this.surgeryExplorer = null;
     this.scrollManager = scrollManager;
     this.initializeData();
     document.addEventListener("DOMContentLoaded", () => {
@@ -26,8 +27,19 @@ class App {
   initializeComponents() {
     this.patientProfile = new PatientProfile("profile-results");
     this.dimensionsExplorer = new DimensionsExplorer("dimensions-chart");
+    this.surgeryExplorer = new SurgeryExplorer("surgery-results");
+
     this.scrollManager.onVisualizationChange((activeViz) => {
       console.log(`Active visualization changed to: ${activeViz}`);
+
+      const vizSections = document.querySelectorAll(".viz-section");
+      vizSections.forEach((section) => {
+        if (section.id === activeViz) {
+          section.classList.add("active");
+        } else {
+          section.classList.remove("active");
+        }
+      });
     });
   }
 

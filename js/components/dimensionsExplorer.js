@@ -239,24 +239,27 @@ class DimensionsExplorer {
       });
     }
 
-    if (this.elements.agePresetButtons && this.elements.agePresetButtons.length > 0) {
-      this.elements.agePresetButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
+    if (
+      this.elements.agePresetButtons &&
+      this.elements.agePresetButtons.length > 0
+    ) {
+      this.elements.agePresetButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
           const min = parseInt(btn.dataset.min);
           const max = parseInt(btn.dataset.max);
-          
-          if (btn.classList.contains('active')) {
+
+          if (btn.classList.contains("active")) {
             this.clearActivePreset();
             this.setAgeRange(0, 100);
           } else {
             this.clearActivePreset();
-            
-            btn.classList.add('active');
+
+            btn.classList.add("active");
             this.elements.activePreset = btn;
-            
+
             this.setAgeRange(min, max);
           }
-          
+
           this.handleFiltersChange();
         });
       });
@@ -264,9 +267,12 @@ class DimensionsExplorer {
   }
 
   clearActivePreset() {
-    if (this.elements.agePresetButtons && this.elements.agePresetButtons.length > 0) {
-      this.elements.agePresetButtons.forEach(btn => {
-        btn.classList.remove('active');
+    if (
+      this.elements.agePresetButtons &&
+      this.elements.agePresetButtons.length > 0
+    ) {
+      this.elements.agePresetButtons.forEach((btn) => {
+        btn.classList.remove("active");
       });
       this.elements.activePreset = null;
     }
@@ -356,7 +362,6 @@ class DimensionsExplorer {
   updateChart() {
     if (!dataService.isLoaded) return;
 
-    // Remove any existing no-data message first
     this.chart.svg.selectAll(".no-data-text").remove();
 
     const xAxis = this.elements.xAxis.value;
@@ -533,7 +538,7 @@ class DimensionsExplorer {
 
   showTooltip(event, d, xAxis, yAxis, colorBy, sizeBy) {
     const tooltip = d3.select("body .tooltip");
-    
+
     tooltip.transition().duration(200).style("opacity", 0.9);
 
     let tooltipContent = `
@@ -580,53 +585,46 @@ class DimensionsExplorer {
     }</div>`;
 
     tooltip.html(tooltipContent);
-    
-    // Position tooltip after content is set so we get correct dimensions
+
     this.positionTooltip(event);
   }
 
   moveTooltip(event) {
     this.positionTooltip(event);
   }
-  
+
   positionTooltip(event) {
     const tooltip = d3.select("body .tooltip");
     const tooltipNode = tooltip.node();
-    
-    // Get viewport dimensions
+
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-    
-    // Get tooltip dimensions
+
     const tooltipWidth = tooltipNode.offsetWidth;
     const tooltipHeight = tooltipNode.offsetHeight;
-    
-    // Default position is to the right of the cursor, aligned with cursor vertical position
+
     let left = event.clientX + 15;
     let top = event.clientY;
-    
-    // If tooltip would go off right edge, position to the left of cursor
+
     if (left + tooltipWidth > viewportWidth - 20) {
       left = event.clientX - tooltipWidth - 15;
     }
-    
-    // If tooltip would go off bottom edge, position above cursor
+
     if (top + tooltipHeight > viewportHeight - 20) {
       top = event.clientY - tooltipHeight;
     }
-    
-    // If tooltip would go off left edge (after right edge adjustment), align with left edge of screen with padding
+
     if (left < 10) {
       left = 10;
     }
-    
-    // If tooltip would go off top edge (after bottom edge adjustment), align with top edge of screen with padding
+
     if (top < 10) {
       top = 10;
     }
-    
-    // Apply the calculated position - forcing pixel units
-    tooltip.style("left", `${Math.round(left)}px`).style("top", `${Math.round(top)}px`);
+
+    tooltip
+      .style("left", `${Math.round(left)}px`)
+      .style("top", `${Math.round(top)}px`);
   }
 
   hideTooltip() {
@@ -783,13 +781,9 @@ class DimensionsExplorer {
   }
 
   showNoDataMessage() {
-    // Remove any existing points
     this.chart.pointsGroup.selectAll("*").remove();
-
-    // Remove any existing no-data message first
     this.chart.svg.selectAll(".no-data-text").remove();
 
-    // Add the no-data message
     const noDataMessage = this.chart.svg
       .append("text")
       .attr("class", "no-data-text")

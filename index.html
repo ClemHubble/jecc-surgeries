@@ -146,12 +146,14 @@
                                         <div class="age-range-inputs">
                                             <div class="age-input-group">
                                                 <label for="age-min">Min:</label>
-                                                <input type="number" id="age-min" class="age-input" min="0" max="100" value="0">
+                                                <input type="number" id="age-min" class="age-input" min="0" max="100"
+                                                    value="0">
                                             </div>
                                             <span>to</span>
                                             <div class="age-input-group">
                                                 <label for="age-max">Max:</label>
-                                                <input type="number" id="age-max" class="age-input" min="0" max="100" value="100">
+                                                <input type="number" id="age-max" class="age-input" min="0" max="100"
+                                                    value="100">
                                             </div>
                                         </div>
                                         <div class="age-range-slider">
@@ -174,8 +176,10 @@
                                                 <button class="preset-btn" data-min="2" data-max="4">Toddler</button>
                                                 <button class="preset-btn" data-min="5" data-max="11">Child</button>
                                                 <button class="preset-btn" data-min="12" data-max="17">Teen</button>
-                                                <button class="preset-btn" data-min="18" data-max="44">Young Adult</button>
-                                                <button class="preset-btn" data-min="45" data-max="64">Middle-aged</button>
+                                                <button class="preset-btn" data-min="18" data-max="44">Young
+                                                    Adult</button>
+                                                <button class="preset-btn" data-min="45"
+                                                    data-max="64">Middle-aged</button>
                                                 <button class="preset-btn" data-min="65" data-max="100">Senior</button>
                                             </div>
                                         </div>
@@ -208,12 +212,53 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="chart-area">
                                 <div class="chart-container" id="dimensions-chart"></div>
                                 <div class="tooltip"></div>
                             </div>
                             <div id="dimension-legend" class="chart-legend">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="viz-section" id="viz-surgery">
+                    <div class="input-container">
+                        <div class="filter-panel">
+                            <div class="input-title">
+                                <h2>Surgery Explorer</h2>
+                                <p>Explore specific surgery types in detail</p>
+                            </div>
+
+                            <div class="filter-section highlight-section" id="surgery-selection-section">
+                                <div class="filter-group">
+                                    <label for="surgery-combobox">Search & Select Surgery</label>
+                                    <div class="custom-combobox" id="surgery-combobox-container">
+                                        <div class="combobox-display" id="surgery-combobox-display">
+                                            <span class="combobox-value">Select a surgery...</span>
+                                            <div class="combobox-arrow"></div>
+                                        </div>
+                                        <div class="combobox-dropdown" id="surgery-combobox-dropdown">
+                                            <div class="combobox-search-container">
+                                                <input type="text" id="surgery-combobox-search" class="combobox-search"
+                                                    placeholder="Search surgeries...">
+                                            </div>
+                                            <div class="combobox-options" id="surgery-combobox-options">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="text" id="surgery-search" style="display: none;">
+                                    <select id="surgery-select" style="display: none;">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="viz-container">
+                        <div class="chart-panel">
+                            <div class="results-content" id="surgery-results">
                             </div>
                         </div>
                     </div>
@@ -315,7 +360,8 @@
                         size. This allows you to explore complex relationships that simple charts can't capture.</p>
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce condimentum diam non odio sodales,
                         quis feugiat odio lacinia. Fusce euismod tellus et porta venenatis.</p>
-                    <p>For example, you might plot BMI against hospital stay, with points colored by department and sized
+                    <p>For example, you might plot BMI against hospital stay, with points colored by department and
+                        sized
                         by blood loss. This reveals how these four factors interact in determining surgical outcomes.
                     </p>
                     <p>Pay special attention to clusters of points and outliers - these often represent interesting
@@ -323,6 +369,58 @@
                     <p>The black outline on some points indicates mortality cases. Notice how these cases distribute
                         across the different dimensions, potentially revealing combinations of factors associated with
                         higher risk.</p>
+                </section>
+
+                <div class="transition-marker">
+                    <div class="transition-label">Surgery Explorer</div>
+                </div>
+
+                <section class="text-section" data-viz="viz-surgery" data-highlight="surgery-selection-section">
+                    <h2>Exploring Specific Surgical Procedures</h2>
+                    <p>Every surgical procedure has its own unique profile of risk factors, resource requirements, and
+                        outcomes. The Surgery Explorer lets you dive deep into individual procedure types from the
+                        VitalDB dataset.</p>
+                    <p>Start by selecting a specific procedure from the dropdown menu. You can search for procedures by
+                        name to quickly find the ones you're interested in. The dataset includes hundreds of different
+                        surgical procedures across various specialties.</p>
+                    <p>Once you select a procedure, the dashboard will update to show a comprehensive profile of that
+                        specific surgery type - revealing demographic patterns, operative details, resource utilization,
+                        and outcomes specific to that procedure.</p>
+                    <p>This granular approach allows clinicians, hospital administrators, and researchers to understand
+                        the unique characteristics of each procedure type, leading to better resource planning, risk
+                        assessment, and quality improvement initiatives.</p>
+                </section>
+
+                <section class="text-section" data-viz="viz-surgery">
+                    <h2>Understanding Surgical Demographics and Approaches</h2>
+                    <p>The demographics section of the dashboard reveals who typically undergoes the selected procedure.
+                        Age distribution might show whether a procedure is more common in certain age groups. Sex
+                        distribution can reveal procedures with strong gender predominance.</p>
+                    <p>The surgical approaches visualization shows the breakdown of minimally invasive versus open
+                        techniques used for the procedure. Some procedures have largely transitioned to laparoscopic or
+                        robotic approaches, while others remain primarily open.</p>
+                    <p>Understanding which departments most commonly perform a particular procedure provides insights
+                        into specialization patterns within healthcare systems. Some procedures may cross traditional
+                        specialty boundaries.</p>
+                    <p>The anesthesia types chart reveals whether regional techniques like spinal or epidural anesthesia
+                        are commonly used for the procedure, or if general anesthesia is the standard approach. This has
+                        implications for recovery trajectories and resource utilization.</p>
+                </section>
+
+                <section class="text-section" data-viz="viz-surgery">
+                    <h2>Resource Utilization and Outcomes Analysis</h2>
+                    <p>The resource utilization section provides detailed information about what's typically required
+                        for the selected procedure - from IV and arterial line placement to fluid administration and
+                        medication usage.</p>
+                    <p>This information is crucial for procedural planning, staff education, and resource allocation.
+                        Understanding the typical resource profile of a procedure helps ensure that appropriate supplies
+                        and equipment are available when needed.</p>
+                    <p>The length of stay visualization shows the distribution of hospital stays and ICU days for the
+                        procedure. This data is essential for capacity planning and helps set expectations for patients
+                        and families.</p>
+                    <p>The summary metrics at the top of the dashboard provide at-a-glance comparisons between the
+                        selected procedure and overall surgical averages. This context helps identify procedures that
+                        are outliers in terms of duration, blood loss, or mortality risk.</p>
                 </section>
             </div>
         </div>
@@ -343,6 +441,7 @@
 
     <script src="js/components/patientProfile.js"></script>
     <script src="js/components/dimensionsExplorer.js"></script>
+    <script src="js/components/surgeryExplorer.js"></script>
 
     <script src="js/app.js"></script>
 </body>

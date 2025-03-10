@@ -5,19 +5,17 @@ class ScrollManager {
     this.vizSections = document.querySelectorAll(".viz-section");
     this.progressBar = document.getElementById("progress-bar");
     this.activeViz = "viz-profile";
-    this.transitionMarker = document.querySelector(".transition-marker");
-    this.transitionPoint = this.transitionMarker
-      ? this.transitionMarker.offsetTop
-      : 0;
+    this.transitionMarkers = document.querySelectorAll(".transition-marker");
+    this.transitionPoints = [];
 
     this.updateVisualization = this.updateVisualization.bind(this);
-    this.updateTransitionPoint = this.updateTransitionPoint.bind(this);
+    this.updateTransitionPoints = this.updateTransitionPoints.bind(this);
 
     window.addEventListener("scroll", this.updateVisualization);
-    window.addEventListener("resize", this.updateTransitionPoint);
+    window.addEventListener("resize", this.updateTransitionPoints);
 
     this.updateVisualization();
-    this.updateTransitionPoint();
+    this.updateTransitionPoints();
   }
 
   updateScrollProgress() {
@@ -33,8 +31,20 @@ class ScrollManager {
     this.updateScrollProgress();
 
     const scrollTop = window.scrollY + window.innerHeight / 2;
-    const newActiveViz =
-      scrollTop > this.transitionPoint ? "viz-dimensions" : "viz-profile";
+
+    let newActiveViz = "viz-profile";
+
+    if (
+      this.transitionPoints.length >= 2 &&
+      scrollTop > this.transitionPoints[1]
+    ) {
+      newActiveViz = "viz-surgery";
+    } else if (
+      this.transitionPoints.length >= 1 &&
+      scrollTop > this.transitionPoints[0]
+    ) {
+      newActiveViz = "viz-dimensions";
+    }
 
     if (newActiveViz !== this.activeViz) {
       this.activeViz = newActiveViz;
@@ -83,10 +93,14 @@ class ScrollManager {
     }
   }
 
-  updateTransitionPoint() {
-    if (this.transitionMarker) {
-      this.transitionPoint = this.transitionMarker.offsetTop;
-    }
+  updateTransitionPoints() {
+    this.transitionPoints = [];
+
+    this.transitionMarkers.forEach((marker) => {
+      this.transitionPoints.push(marker.offsetTop);
+    });
+
+    this.transitionPoints.sort((a, b) => a - b);
   }
 
   onVisualizationChange(callback) {

@@ -31,6 +31,32 @@ const Formatters = {
     return `${value.toFixed(decimals)} ${unit}`.trim();
   },
 
+  formatComparison(value, compareValue, higherIsBetter = true) {
+    if (
+      value === undefined ||
+      value === null ||
+      isNaN(value) ||
+      compareValue === undefined ||
+      compareValue === null ||
+      isNaN(compareValue) ||
+      compareValue === 0
+    ) {
+      return "";
+    }
+
+    const percentChange = ((value - compareValue) / compareValue) * 100;
+    const isHigher = percentChange > 0;
+
+    const isPositive = higherIsBetter ? isHigher : !isHigher;
+
+    const sign = isHigher ? "+" : "";
+    const formattedValue = `${sign}${percentChange.toFixed(1)}%`;
+
+    const qualityLabel = isPositive ? " better" : " worse";
+
+    return `${formattedValue} vs avg${qualityLabel}`;
+  },
+
   getDimensionLabel(dimension) {
     const labels = {
       age: "Age (years)",
