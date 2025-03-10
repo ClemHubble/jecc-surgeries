@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Surgical Outcomes Explorer</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -144,13 +148,31 @@
                             <div class="filter-section highlight-section" id="age-filter-section">
                                 <div class="filter-group">
                                     <label>Age Range Filter</label>
-                                    <div class="range-slider">
-                                        <input type="range" id="age-range-min" min="0" max="100" value="0">
-                                        <input type="range" id="age-range-max" min="0" max="100" value="100">
-                                    </div>
-                                    <div class="range-values">
-                                        <span id="age-min-display">0</span>
-                                        <span id="age-max-display">100</span>
+                                    <div class="age-range-control">
+                                        <div class="age-range-inputs">
+                                            <div class="age-input-group">
+                                                <label for="age-min">Min:</label>
+                                                <input type="number" id="age-min" class="age-input" min="0" max="100" value="0">
+                                            </div>
+                                            <span>to</span>
+                                            <div class="age-input-group">
+                                                <label for="age-max">Max:</label>
+                                                <input type="number" id="age-max" class="age-input" min="0" max="100" value="100">
+                                            </div>
+                                        </div>
+                                        <div class="age-range-slider">
+                                            <input type="range" id="age-range-min" min="0" max="100" value="0">
+                                        </div>
+                                        <div class="age-range-slider">
+                                            <input type="range" id="age-range-max" min="0" max="100" value="100">
+                                        </div>
+                                        <div class="range-values">
+                                            <span>0</span>
+                                            <span>25</span>
+                                            <span>50</span>
+                                            <span>75</span>
+                                            <span>100</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

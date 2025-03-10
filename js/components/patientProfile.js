@@ -80,22 +80,17 @@ class PatientProfile {
 
     this.container.innerHTML = "";
 
-    // Display appropriate message based on the number of matches
     if (similarProfiles.length === 0) {
-      // No matches at all
       this.showNoDataMessage(0);
       return;
     } else if (similarProfiles.length < 10) {
-      // Some matches, but not enough for reliable visualization
       this.showNoDataMessage(similarProfiles.length);
       return;
     } else if (similarProfiles.length < 20) {
-      // Enough for visualization but with low confidence - show results with warning
       this.createVisualizationsWithWarning(similarProfiles);
       return;
     }
 
-    // Sufficient data - show visualizations as normal
     this.createVisualizations(similarProfiles);
   }
 
@@ -106,10 +101,9 @@ class PatientProfile {
     messageDiv.className = "no-data-msg";
     messageDiv.style.padding = "30px";
     messageDiv.style.textAlign = "center";
-    messageDiv.style.backgroundColor = "#f8f9fa";
-    messageDiv.style.borderRadius = "8px";
-    messageDiv.style.margin = "20px 0";
-    messageDiv.style.boxShadow = "0 2px 4px rgba(0,0,0,0.05)";
+    messageDiv.style.borderRadius = "var(--radius)";
+    messageDiv.style.backgroundColor = "var(--background)";
+    messageDiv.style.border = "1px solid var(--border)";
     this.container.appendChild(messageDiv);
 
     const icon = document.createElement("div");
@@ -120,15 +114,16 @@ class PatientProfile {
     
     const title = document.createElement("h3");
     title.textContent = "Insufficient Data";
-    title.style.color = "#e74c3c";
+    title.style.color = "var(--destructive)";
     title.style.marginBottom = "10px";
     title.style.fontSize = "1.2rem";
+    title.style.fontWeight = "500";
     messageDiv.appendChild(title);
 
     const message = document.createElement("p");
-    message.style.fontSize = "1rem";
+    message.style.fontSize = "0.875rem";
     message.style.lineHeight = "1.5";
-    message.style.color = "#555";
+    message.style.color = "var(--foreground)";
     
     if (count === 0) {
       message.innerHTML = "No matching patient profiles found with your current criteria.<br>Please adjust your parameters to broaden your search.";
@@ -139,13 +134,13 @@ class PatientProfile {
 
     const suggestions = document.createElement("div");
     suggestions.style.marginTop = "20px";
-    suggestions.style.fontSize = "0.9rem";
+    suggestions.style.fontSize = "0.875rem";
     suggestions.style.lineHeight = "1.4";
-    suggestions.style.color = "#666";
+    suggestions.style.color = "var(--muted-foreground)";
     suggestions.style.padding = "15px";
-    suggestions.style.backgroundColor = "#fff";
-    suggestions.style.borderRadius = "6px";
-    suggestions.style.border = "1px solid #ddd";
+    suggestions.style.backgroundColor = "var(--background)";
+    suggestions.style.borderRadius = "var(--radius)";
+    suggestions.style.border = "1px solid var(--border)";
     
     suggestions.innerHTML = `
       <strong>Suggestions:</strong>
@@ -160,51 +155,52 @@ class PatientProfile {
   }
 
   createVisualizations(profiles) {
-    // Create a flex container for better layout
     this.container.style.display = "flex";
     this.container.style.flexDirection = "column";
     this.container.style.gap = "20px";
     
-    // Clear any existing content first
     this.container.innerHTML = "";
     
-    // Create a summary stats card at the top
     this.createSummaryStats(profiles);
     
-    // Create two-column layout for main visualizations
     const mainRow = document.createElement("div");
     mainRow.style.display = "flex";
     mainRow.style.gap = "20px";
     mainRow.style.flexWrap = "wrap";
     this.container.appendChild(mainRow);
     
-    // Surgery visualization in the first column
     const surgeriesDiv = document.createElement("div");
     surgeriesDiv.className = "visualization-card surgeries-container";
     surgeriesDiv.style.flex = "1";
     surgeriesDiv.style.minWidth = "300px";
+    surgeriesDiv.style.backgroundColor = "var(--background)";
+    surgeriesDiv.style.borderRadius = "var(--radius)";
+    surgeriesDiv.style.border = "1px solid var(--border)";
+    surgeriesDiv.style.padding = "15px";
     mainRow.appendChild(surgeriesDiv);
     this.createSurgeryVisualization(surgeriesDiv, profiles);
     
-    // Approach visualization in the second column
     const approachDiv = document.createElement("div");
     approachDiv.className = "visualization-card approach-container";
     approachDiv.style.flex = "1";
     approachDiv.style.minWidth = "300px";
+    approachDiv.style.backgroundColor = "var(--background)";
+    approachDiv.style.borderRadius = "var(--radius)";
+    approachDiv.style.border = "1px solid var(--border)";
+    approachDiv.style.padding = "15px";
     mainRow.appendChild(approachDiv);
     this.createApproachVisualization(approachDiv, profiles);
     
-    // Add sample size info at the bottom
     this.addSampleSizeInfo(profiles.length);
   }
   
   createContainer(className) {
     const div = document.createElement("div");
     div.className = `visualization-card ${className}`;
+    div.style.backgroundColor = "var(--background)";
+    div.style.borderRadius = "var(--radius)";
+    div.style.border = "1px solid var(--border)";
     div.style.padding = "15px";
-    div.style.backgroundColor = "#fff";
-    div.style.borderRadius = "8px";
-    div.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
     div.style.marginBottom = "15px";
     return div;
   }
@@ -212,17 +208,18 @@ class PatientProfile {
   createSummaryStats(profiles) {
     const statsDiv = document.createElement("div");
     statsDiv.className = "visualization-card summary-stats";
-    statsDiv.style.padding = "20px";
-    statsDiv.style.backgroundColor = "#fff";
-    statsDiv.style.borderRadius = "8px";
-    statsDiv.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
+    statsDiv.style.backgroundColor = "var(--background)";
+    statsDiv.style.borderRadius = "var(--radius)";
+    statsDiv.style.border = "1px solid var(--border)";
+    statsDiv.style.padding = "15px";
     this.container.appendChild(statsDiv);
     
     const title = document.createElement("h3");
     title.textContent = "Expected Outcomes";
     title.style.margin = "0 0 15px 0";
-    title.style.color = "#2c3e50";
+    title.style.color = "var(--foreground)";
     title.style.fontSize = "1.2rem";
+    title.style.fontWeight = "600";
     statsDiv.appendChild(title);
     
     const statsGrid = document.createElement("div");
@@ -268,9 +265,10 @@ class PatientProfile {
     
     stats.forEach(stat => {
       const statCard = document.createElement("div");
-      statCard.style.backgroundColor = "#f8f9fa";
+      statCard.style.backgroundColor = "var(--background)";
       statCard.style.padding = "12px";
-      statCard.style.borderRadius = "6px";
+      statCard.style.borderRadius = "var(--radius)";
+      statCard.style.border = "1px solid var(--border)";
       statCard.style.textAlign = "center";
       statsGrid.appendChild(statCard);
       
@@ -284,32 +282,29 @@ class PatientProfile {
       value.textContent = stat.value;
       value.style.fontSize = "1.2rem";
       value.style.fontWeight = "bold";
-      value.style.color = "#2980b9";
+      value.style.color = "var(--primary)";
       value.style.marginBottom = "5px";
       statCard.appendChild(value);
       
       const label = document.createElement("div");
       label.textContent = stat.label;
-      label.style.fontSize = "0.9rem";
-      label.style.color = "#7f8c8d";
+      label.style.fontSize = "0.875rem";
+      label.style.color = "var(--muted-foreground)";
       statCard.appendChild(label);
     });
   }
 
   createSurgeryVisualization(container, profiles) {
-    container.style.padding = "20px";
-    container.style.backgroundColor = "#fff";
-    container.style.borderRadius = "8px";
-    container.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
+    container.style.backgroundColor = "var(--background)";
+    container.style.borderRadius = "var(--radius)";
     
     const title = document.createElement("h3");
     title.textContent = "Top Surgeries";
     title.style.margin = "0 0 15px 0";
-    title.style.color = "#2c3e50";
+    title.style.color = "var(--foreground)";
     title.style.fontSize = "1.2rem";
     container.appendChild(title);
 
-    // Create a horizontal bar chart instead of vertical bars
     const topSurgeries = d3
       .rollups(
         profiles,
@@ -319,9 +314,8 @@ class PatientProfile {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5);
 
-    // Increase left margin for longer surgery names and bottom margin for x-axis label
-    const margin = { top: 10, right: 20, bottom: 40, left: 160 };
-    const width = 350 - margin.left - margin.right;
+    const margin = { top: 10, right: 80, bottom: 40, left: 160 };
+    const width = 400 - margin.left - margin.right;
     const height = 200 - margin.top - margin.bottom;
 
     const svg = d3
@@ -334,59 +328,62 @@ class PatientProfile {
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Horizontal scale for values
+    const maxValue = d3.max(topSurgeries, (d) => d[1]);
+    const domainPadding = maxValue * 0.25;
+
     const x = d3
       .scaleLinear()
-      .domain([0, d3.max(topSurgeries, (d) => d[1])])
+      .domain([0, maxValue + domainPadding])
       .nice()
       .range([0, width]);
 
-    // Vertical scale for surgery names
     const y = d3
       .scaleBand()
       .domain(topSurgeries.map((d) => d[0]))
       .range([0, height])
       .padding(0.3);
 
-    // Add X axis with label
     const xAxis = svg
       .append("g")
       .attr("transform", `translate(0,${height})`)
       .call(d3.axisBottom(x).ticks(5))
       .style("font-size", "10px");
     
-    // Add X axis label
     svg.append("text")
       .attr("x", width / 2)
-      .attr("y", height + 30) // Positioned below the x-axis
+      .attr("y", height + 30)
       .attr("text-anchor", "middle")
-      .attr("fill", "#666")
+      .attr("fill", "var(--muted-foreground)")
       .style("font-size", "11px")
       .text("Number of Patients");
 
-    // Add Y axis with full surgery names
     svg
       .append("g")
       .call(d3.axisLeft(y))
       .style("font-size", "12px")
       .selectAll("text")
       .each(function(d) {
-        // Create a short version for display
         let shortName = d;
         if (d.length > 25) {
           shortName = d.substring(0, 23) + "...";
         }
         d3.select(this).text(shortName);
       })
-      .style("text-anchor", "end") // Align text to ensure it doesn't get cut off
+      .style("text-anchor", "end")
       .attr("dx", "-0.5em")
-      .append("title")  // Add a tooltip for full names
+      .append("title")
       .text(d => d);
 
-    // Calculate total for percentages
     const totalPatients = d3.sum(topSurgeries, (d) => d[1]);
 
-    // Add the bars
+    const chartColors = [
+      getComputedStyle(document.documentElement).getPropertyValue('--chart-color-accent-3').trim(),
+      getComputedStyle(document.documentElement).getPropertyValue('--chart-color-accent-2').trim(),
+      getComputedStyle(document.documentElement).getPropertyValue('--chart-color-accent-1').trim(),
+      getComputedStyle(document.documentElement).getPropertyValue('--chart-color-accent-4').trim(),
+      getComputedStyle(document.documentElement).getPropertyValue('--chart-color-accent-5').trim()
+    ];
+
     svg
       .selectAll("rect")
       .data(topSurgeries)
@@ -396,16 +393,12 @@ class PatientProfile {
       .attr("height", y.bandwidth())
       .attr("x", 0)
       .attr("width", (d) => x(d[1]))
-      .attr("fill", "#3498db")
-      // Gradient fill for better aesthetics
       .attr("fill", function(d, i) {
-        const colors = ["#3498db", "#2980b9", "#1f618d", "#154360", "#0b2439"];
-        return colors[i % colors.length];
+        return chartColors[i % chartColors.length];
       })
-      .attr("rx", 4)  // Rounded corners
+      .attr("rx", 4)
       .attr("ry", 4);
 
-    // Add labels directly on the bars
     svg
       .selectAll(".bar-label")
       .data(topSurgeries)
@@ -413,49 +406,76 @@ class PatientProfile {
       .append("text")
       .attr("class", "bar-label")
       .attr("y", d => y(d[0]) + y.bandwidth() / 2)
-      .attr("x", d => x(d[1]) + 5)
+      .attr("x", d => {
+        const barWidth = x(d[1]);
+        const percentage = ((d[1] / totalPatients) * 100).toFixed(1);
+        const labelText = `${d[1]} (${percentage}%)`;
+        const textWidth = labelText.length * 6;
+        
+        if (barWidth > textWidth + 10) {
+          return barWidth - 8;
+        }
+        return barWidth + 5;
+      })
+      .attr("text-anchor", d => {
+        const barWidth = x(d[1]);
+        const percentage = ((d[1] / totalPatients) * 100).toFixed(1);
+        const labelText = `${d[1]} (${percentage}%)`;
+        const textWidth = labelText.length * 6;
+        
+        if (barWidth > textWidth + 10) {
+          return "end";
+        }
+        return "start";
+      })
       .attr("dy", ".35em")
       .style("font-size", "11px")
-      .style("fill", "#333")
-      .style("font-weight", "bold")
+      .style("fill", d => {
+        const barWidth = x(d[1]);
+        const percentage = ((d[1] / totalPatients) * 100).toFixed(1);
+        const labelText = `${d[1]} (${percentage}%)`;
+        const textWidth = labelText.length * 6;
+        
+        if (barWidth > textWidth + 10) {
+          return "var(--primary-foreground)";
+        }
+        return "var(--foreground)";
+      })
+      .style("font-weight", "500")
       .text(d => {
         const percentage = ((d[1] / totalPatients) * 100).toFixed(1);
         return `${d[1]} (${percentage}%)`;
       });
 
-    // Add value hover effects
     svg
       .selectAll("rect")
       .on("mouseover", function(event, d) {
         d3.select(this)
-          .attr("fill", "#e74c3c")
+          .attr("fill", "var(--destructive)")
           .attr("opacity", 0.8);
       })
       .on("mouseout", function(event, d) {
         d3.select(this)
           .attr("fill", function(d, i) {
-            const colors = ["#3498db", "#2980b9", "#1f618d", "#154360", "#0b2439"];
             const index = topSurgeries.findIndex(item => item[0] === d[0]);
-            return colors[index % colors.length];
+            return chartColors[index % chartColors.length];
           })
           .attr("opacity", 1);
       });
   }
 
   createApproachVisualization(container, profiles) {
-    container.style.padding = "20px";
-    container.style.backgroundColor = "#fff";
-    container.style.borderRadius = "8px";
-    container.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
+    container.style.backgroundColor = "var(--background)";
+    container.style.borderRadius = "var(--radius)";
     
     const title = document.createElement("h3");
     title.textContent = "Surgical Approaches";
     title.style.margin = "0 0 15px 0";
-    title.style.color = "#2c3e50";
+    title.style.color = "var(--foreground)";
     title.style.fontSize = "1.2rem";
+    title.style.fontWeight = "500";
     container.appendChild(title);
 
-    // Process the approach data
     const approaches = d3.rollups(
       profiles,
       (v) => v.length,
@@ -472,7 +492,6 @@ class PatientProfile {
       }))
       .sort((a, b) => b.count - a.count);
 
-    // Create a donut chart instead of a pie chart
     const width = 320;
     const height = 220;
     const radius = Math.min(width, height) / 2;
@@ -498,33 +517,37 @@ class PatientProfile {
       .append("g")
       .attr("transform", `translate(${width / 2},${height / 2})`);
 
-    // Add a color scheme
+    const chartColors = [
+      getComputedStyle(document.documentElement).getPropertyValue('--chart-color-accent-3').trim(),
+      getComputedStyle(document.documentElement).getPropertyValue('--chart-color-accent-2').trim(),
+      getComputedStyle(document.documentElement).getPropertyValue('--chart-color-accent-1').trim(),
+      getComputedStyle(document.documentElement).getPropertyValue('--chart-color-accent-4').trim(),
+      getComputedStyle(document.documentElement).getPropertyValue('--chart-color-accent-5').trim(),
+      getComputedStyle(document.documentElement).getPropertyValue('--chart-color-1').trim(),
+      getComputedStyle(document.documentElement).getPropertyValue('--chart-color-2').trim()
+    ];
+
     const color = d3
       .scaleOrdinal()
       .domain(approachData.map((d) => d.approach))
-      .range([
-        "#2ecc71", "#3498db", "#9b59b6", "#e74c3c", "#f39c12", "#1abc9c", "#34495e"
-      ]);
+      .range(chartColors);
 
-    // Create a donut chart (pie with inner radius)
     const pie = d3.pie()
       .value(d => d.count)
-      .sort(null); // Don't sort, keep the original order
+      .sort(null);
 
     const arcGenerator = d3.arc()
-      .innerRadius(radius * 0.5) // This creates the donut hole
+      .innerRadius(radius * 0.5)
       .outerRadius(radius * 0.8)
-      .cornerRadius(3) // Rounded corners
-      .padAngle(0.02); // Space between segments
+      .cornerRadius(3)
+      .padAngle(0.02);
 
-    // Create a smaller arc for hover effects
     const hoverArc = d3.arc()
       .innerRadius(radius * 0.45)
       .outerRadius(radius * 0.85)
       .cornerRadius(4)
       .padAngle(0.02);
 
-    // Add the donut segments
     const arcs = svg
       .selectAll("path")
       .data(pie(approachData))
@@ -532,16 +555,14 @@ class PatientProfile {
       .append("path")
       .attr("d", arcGenerator)
       .attr("fill", d => color(d.data.approach))
-      .attr("stroke", "white")
+      .attr("stroke", "var(--background)")
       .attr("stroke-width", 1)
       .style("transition", "all 0.2s ease")
       .on("mouseover", function(event, d) {
-        // Highlight the segment
         d3.select(this)
           .attr("d", hoverArc)
           .attr("stroke-width", 2);
         
-        // Show percentage in center
         centerText
           .text(`${d.data.percentage.toFixed(1)}%`)
           .attr("fill", color(d.data.approach));
@@ -549,24 +570,21 @@ class PatientProfile {
         centerLabel.text(d.data.approach);
       })
       .on("mouseout", function() {
-        // Restore original appearance
         d3.select(this)
           .attr("d", arcGenerator)
           .attr("stroke-width", 1);
         
-        // Reset center text
         centerText.text(`${total}`);
         centerLabel.text("surgeries");
       });
       
-    // Add center text
     const centerText = svg
       .append("text")
       .attr("text-anchor", "middle")
       .attr("dy", "-0.2em")
       .attr("font-size", "1.5rem")
       .attr("font-weight", "bold")
-      .attr("fill", "#2c3e50")
+      .attr("fill", "var(--foreground)")
       .text(`${total}`);
     
     const centerLabel = svg
@@ -574,10 +592,9 @@ class PatientProfile {
       .attr("text-anchor", "middle")
       .attr("dy", "1.2em")
       .attr("font-size", "0.9rem")
-      .attr("fill", "#7f8c8d")
+      .attr("fill", "var(--muted-foreground)")
       .text("surgeries");
 
-    // Add a legend
     const legendContainer = document.createElement("div");
     legendContainer.style.flex = "1";
     legendContainer.style.display = "flex";
@@ -594,7 +611,7 @@ class PatientProfile {
       item.style.alignItems = "center";
       item.style.gap = "8px";
       item.style.padding = "4px";
-      item.style.borderRadius = "4px";
+      item.style.borderRadius = "var(--radius)";
       item.style.cursor = "pointer";
       legendContainer.appendChild(item);
 
@@ -621,10 +638,9 @@ class PatientProfile {
       const percent = document.createElement("span");
       percent.textContent = `${d.percentage.toFixed(1)}%`;
       percent.style.fontWeight = "bold";
-      percent.style.color = "#2980b9";
+      percent.style.color = "var(--primary)";
       label.appendChild(percent);
 
-      // Highlight corresponding donut segment on hover
       item.addEventListener("mouseover", () => {
         svg.selectAll("path").each(function(pieData) {
           if (pieData.data.approach === d.approach) {
@@ -632,7 +648,6 @@ class PatientProfile {
               .attr("d", hoverArc)
               .attr("stroke-width", 2);
               
-            // Update center text
             centerText
               .text(`${d.percentage.toFixed(1)}%`)
               .attr("fill", color(d.approach));
@@ -641,7 +656,7 @@ class PatientProfile {
           }
         });
         
-        item.style.backgroundColor = "#f1f8fc";
+        item.style.backgroundColor = "var(--accent)";
       });
 
       item.addEventListener("mouseout", () => {
@@ -649,7 +664,6 @@ class PatientProfile {
           .attr("d", arcGenerator)
           .attr("stroke-width", 1);
           
-        // Reset center text
         centerText.text(`${total}`);
         centerLabel.text("surgeries");
         
@@ -659,35 +673,32 @@ class PatientProfile {
   }
 
   createOutcomeStats(profiles) {
-    // This method is now replaced by createSummaryStats
   }
 
   createApproachBreakdown(profiles) {
-    // This method is now replaced by createApproachVisualization
   }
 
   addSampleSizeInfo(count) {
     const infoDiv = document.createElement("div");
     infoDiv.className = "sample-info";
-    infoDiv.style.marginTop = "20px";
-    infoDiv.style.fontStyle = "italic";
+    infoDiv.style.textAlign = "center";
+    infoDiv.style.color = "var(--muted-foreground)";
+    infoDiv.style.fontSize = "0.75rem";
+    infoDiv.style.marginTop = "10px";
     infoDiv.textContent = `Predictions based on ${count} similar patient profiles.`;
     this.container.appendChild(infoDiv);
   }
 
   createVisualizationsWithWarning(profiles) {
-    // Clear container first
     this.container.innerHTML = "";
     
-    // Create and add the warning banner at the top first
     const warningBanner = document.createElement("div");
-    warningBanner.style.backgroundColor = "#fff3cd";
-    warningBanner.style.color = "#856404";
+    warningBanner.style.color = "var(--chart-color-accent-5)";
     warningBanner.style.padding = "12px 15px";
-    warningBanner.style.borderRadius = "6px";
+    warningBanner.style.borderRadius = "var(--radius)";
     warningBanner.style.marginBottom = "15px";
-    warningBanner.style.border = "1px solid #ffeeba";
-    warningBanner.style.fontSize = "0.9rem";
+    warningBanner.style.border = "1px solid var(--chart-color-accent-5)";
+    warningBanner.style.fontSize = "0.875rem";
     warningBanner.style.display = "flex";
     warningBanner.style.alignItems = "center";
     warningBanner.style.gap = "10px";
@@ -701,42 +712,42 @@ class PatientProfile {
     message.innerHTML = `<strong>Limited data available:</strong> Only ${profiles.length} matching profiles found. Results may be less reliable.`;
     warningBanner.appendChild(message);
     
-    // Add the warning banner to the container first
     this.container.appendChild(warningBanner);
     
-    // Now create the regular container elements without clearing
-    // Create a flex container for better layout
     this.container.style.display = "flex";
     this.container.style.flexDirection = "column";
     this.container.style.gap = "20px";
     
-    // Create a summary stats card
     this.createSummaryStats(profiles);
     
-    // Create two-column layout for main visualizations
     const mainRow = document.createElement("div");
     mainRow.style.display = "flex";
     mainRow.style.gap = "20px";
     mainRow.style.flexWrap = "wrap";
     this.container.appendChild(mainRow);
     
-    // Surgery visualization in the first column
     const surgeriesDiv = document.createElement("div");
     surgeriesDiv.className = "visualization-card surgeries-container";
     surgeriesDiv.style.flex = "1";
     surgeriesDiv.style.minWidth = "300px";
+    surgeriesDiv.style.backgroundColor = "var(--background)";
+    surgeriesDiv.style.borderRadius = "var(--radius)";
+    surgeriesDiv.style.border = "1px solid var(--border)";
+    surgeriesDiv.style.padding = "15px";
     mainRow.appendChild(surgeriesDiv);
     this.createSurgeryVisualization(surgeriesDiv, profiles);
     
-    // Approach visualization in the second column
     const approachDiv = document.createElement("div");
     approachDiv.className = "visualization-card approach-container";
     approachDiv.style.flex = "1";
     approachDiv.style.minWidth = "300px";
+    approachDiv.style.backgroundColor = "var(--background)";
+    approachDiv.style.borderRadius = "var(--radius)";
+    approachDiv.style.border = "1px solid var(--border)";
+    approachDiv.style.padding = "15px";
     mainRow.appendChild(approachDiv);
     this.createApproachVisualization(approachDiv, profiles);
     
-    // Add sample size info at the bottom
     this.addSampleSizeInfo(profiles.length);
   }
 }

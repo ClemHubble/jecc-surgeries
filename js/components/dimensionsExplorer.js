@@ -6,7 +6,6 @@ class DimensionsExplorer {
       return;
     }
 
-    // Create tooltip div if it doesn't exist
     if (!document.querySelector('.tooltip')) {
       d3.select('body')
         .append('div')
@@ -19,10 +18,10 @@ class DimensionsExplorer {
       yAxis: document.getElementById("y-axis"),
       colorBy: document.getElementById("color-by"),
       sizeBy: document.getElementById("size-by"),
-      ageMin: document.getElementById("age-range-min"),
-      ageMax: document.getElementById("age-range-max"),
-      ageMinDisplay: document.getElementById("age-min-display"),
-      ageMaxDisplay: document.getElementById("age-max-display"),
+      ageMin: document.getElementById("age-min"),
+      ageMax: document.getElementById("age-max"),
+      ageRangeMin: document.getElementById("age-range-min"),
+      ageRangeMax: document.getElementById("age-range-max"),
       legend: document.getElementById("dimension-legend"),
       stats: {
         count: document.getElementById("selected-count"),
@@ -87,7 +86,7 @@ class DimensionsExplorer {
         "height",
         this.chart.height - this.chart.margin.top - this.chart.margin.bottom
       )
-      .attr("fill", "#f8f9fa")
+      .attr("fill", "var(--background)")
       .attr("rx", 5);
 
     this.chart.svg
@@ -170,32 +169,62 @@ class DimensionsExplorer {
       }
     });
 
-    if (this.elements.ageMin && this.elements.ageMax) {
+    if (this.elements.ageMin && this.elements.ageMax && 
+        this.elements.ageRangeMin && this.elements.ageRangeMax) {
+      
       this.elements.ageMin.addEventListener("input", () => {
-        this.elements.ageMinDisplay.textContent = this.elements.ageMin.value;
-
-        if (
-          parseInt(this.elements.ageMin.value) >
-          parseInt(this.elements.ageMax.value)
-        ) {
-          this.elements.ageMax.value = this.elements.ageMin.value;
-          this.elements.ageMaxDisplay.textContent = this.elements.ageMin.value;
+        const minValue = parseInt(this.elements.ageMin.value);
+        const maxValue = parseInt(this.elements.ageMax.value);
+        
+        this.elements.ageRangeMin.value = minValue;
+        
+        if (minValue > maxValue) {
+          this.elements.ageMax.value = minValue;
+          this.elements.ageRangeMax.value = minValue;
         }
-
+        
         this.handleFiltersChange();
       });
 
       this.elements.ageMax.addEventListener("input", () => {
-        this.elements.ageMaxDisplay.textContent = this.elements.ageMax.value;
-
-        if (
-          parseInt(this.elements.ageMax.value) <
-          parseInt(this.elements.ageMin.value)
-        ) {
-          this.elements.ageMin.value = this.elements.ageMax.value;
-          this.elements.ageMinDisplay.textContent = this.elements.ageMax.value;
+        const minValue = parseInt(this.elements.ageMin.value);
+        const maxValue = parseInt(this.elements.ageMax.value);
+        
+        this.elements.ageRangeMax.value = maxValue;
+        
+        if (maxValue < minValue) {
+          this.elements.ageMin.value = maxValue;
+          this.elements.ageRangeMin.value = maxValue;
         }
+        
+        this.handleFiltersChange();
+      });
 
+      this.elements.ageRangeMin.addEventListener("input", () => {
+        const minValue = parseInt(this.elements.ageRangeMin.value);
+        const maxValue = parseInt(this.elements.ageRangeMax.value);
+        
+        this.elements.ageMin.value = minValue;
+        
+        if (minValue > maxValue) {
+          this.elements.ageMax.value = minValue;
+          this.elements.ageRangeMax.value = minValue;
+        }
+        
+        this.handleFiltersChange();
+      });
+
+      this.elements.ageRangeMax.addEventListener("input", () => {
+        const minValue = parseInt(this.elements.ageRangeMin.value);
+        const maxValue = parseInt(this.elements.ageRangeMax.value);
+        
+        this.elements.ageMax.value = maxValue;
+        
+        if (maxValue < minValue) {
+          this.elements.ageMin.value = maxValue;
+          this.elements.ageRangeMin.value = maxValue;
+        }
+        
         this.handleFiltersChange();
       });
     }
@@ -556,13 +585,23 @@ class DimensionsExplorer {
     const legendContainer = d3.select(this.elements.legend);
     legendContainer.html("");
 
+    const colorSection = legendContainer
+      .append("div")
+      .attr("class", "legend-section");
+
     if (dimension === "none") {
-      legendContainer
+      colorSection
         .append("div")
         .attr("class", "legend-title")
         .text("Color: None (Default)");
 
-      const item = legendContainer.append("div").attr("class", "legend-item");
+      const legendItems = colorSection
+        .append("div")
+        .attr("class", "legend-items");
+
+      const item = legendItems
+        .append("div")
+        .attr("class", "legend-item");
 
       item
         .append("div")
@@ -573,16 +612,20 @@ class DimensionsExplorer {
     } else {
       const range = DataProcessor.getDataRange(data, dimension);
 
-      const legendTitle = legendContainer
+      colorSection
         .append("div")
         .attr("class", "legend-title")
-        .text(Formatters.getDimensionLabel(dimension));
+        .text(`Color: ${Formatters.getDimensionLabel(dimension)}`);
+
+      const legendItems = colorSection
+        .append("div")
+        .attr("class", "legend-items");
 
       if (range.type === "categorical") {
         const uniqueValues = range.categories.sort();
 
         uniqueValues.forEach((value) => {
-          const item = legendContainer
+          const item = legendItems
             .append("div")
             .attr("class", "legend-item");
 
@@ -604,7 +647,7 @@ class DimensionsExplorer {
         ];
         
         asaValues.forEach((value, i) => {
-          const item = legendContainer
+          const item = legendItems
             .append("div")
             .attr("class", "legend-item");
 
@@ -625,65 +668,43 @@ class DimensionsExplorer {
         let numBuckets = 5;
         if (max - min <= 10) numBuckets = 4;
         
-        const bucketSize = (max - min) / numBuckets;
-        
-        const bucketContainer = legendContainer
+        const gradientContainer = colorSection
           .append("div")
-          .style("display", "flex")
-          .style("flex-direction", "column")
-          .style("gap", "8px")
-          .style("margin-top", "5px");
+          .style("width", "100%")
+          .style("max-width", "300px")
+          .style("margin-top", "8px");
           
-        for (let i = 0; i < numBuckets; i++) {
-          const bucketMin = min + i * bucketSize;
-          const bucketMax = min + (i + 1) * bucketSize;
-          
-          const adjustedBucketMax = i === numBuckets - 1 ? max : bucketMax;
-          
-          const item = bucketContainer
-            .append("div")
-            .attr("class", "legend-item");
-            
-          const midpoint = bucketMin + (adjustedBucketMax - bucketMin) / 2;
-          
-          item
-            .append("div")
-            .attr("class", "legend-color")
-            .style("background-color", this.chart.colorScale(midpoint));
-            
-          let formattedMin = Formatters.formatValue(bucketMin, dimension);
-          let formattedMax = Formatters.formatValue(adjustedBucketMax, dimension);
-          
-          if (dimension === "age") {
-            formattedMin = Math.round(bucketMin);
-            formattedMax = Math.round(adjustedBucketMax);
-          }
-          
-          item
-            .append("div")
-            .attr("class", "legend-label")
-            .text(`${formattedMin} - ${formattedMax}`);
-        }
-      }
-    }
+        const gradient = gradientContainer
+          .append("div")
+          .attr("class", "legend-gradient");
 
-    const sizeBy = this.elements.sizeBy.value;
-    if (sizeBy === "none") {
-      legendContainer
-        .append("div")
-        .attr("class", "legend-size-note")
-        .html(
-          '<span class="size-note-label">Point size:</span> Fixed (Default)'
-        );
-    } else {
-      legendContainer
-        .append("div")
-        .attr("class", "legend-size-note")
-        .html(
-          `<span class="size-note-label">Point size:</span> ${Formatters.getDimensionLabel(
-            sizeBy
-          )}`
-        );
+        for (let i = 0; i < numBuckets; i++) {
+          const value = min + (i / (numBuckets - 1)) * (max - min);
+          gradient
+            .append("div")
+            .attr("class", "gradient-step")
+            .style("background-color", this.chart.colorScale(value));
+        }
+        
+        const gradientLabels = gradientContainer
+          .append("div")
+          .attr("class", "gradient-labels");
+          
+        gradientLabels
+          .append("div")
+          .attr("class", "gradient-label")
+          .text(Formatters.formatValue(min, dimension));
+        
+        gradientLabels
+          .append("div")
+          .attr("class", "gradient-label")
+          .text(Formatters.formatValue(min + (max - min) / 2, dimension));
+        
+        gradientLabels
+          .append("div")
+          .attr("class", "gradient-label")
+          .text(Formatters.formatValue(max, dimension));
+      }
     }
   }
 
