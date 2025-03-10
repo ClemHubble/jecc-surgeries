@@ -41,12 +41,12 @@ const DataProcessor = {
       params.weight / ((params.height / 100) * (params.height / 100)) : null;
 
     const filters = [
-      { ageRange: 2, bmiRange: 5, requireASA: true },
-      { ageRange: 5, bmiRange: 8, requireASA: true },
-      { ageRange: 8, bmiRange: 10, requireASA: true },
-      { ageRange: 10, bmiRange: 15, requireASA: true },
-      { ageRange: 10, bmiRange: 20, requireASA: true },
-      { ageRange: 10, bmiRange: 25, requireASA: false } // Last level doesn't require ASA match
+      { ageRange: 2, bmiRange: 5, heightRange: 5, weightRange: 5 },
+      { ageRange: 5, bmiRange: 8, heightRange: 10, weightRange: 10 },
+      { ageRange: 8, bmiRange: 10, heightRange: 15, weightRange: 15 },
+      { ageRange: 10, bmiRange: 15, heightRange: 20, weightRange: 20 },
+      { ageRange: 10, bmiRange: 20, heightRange: 25, weightRange: 25 },
+      { ageRange: 10, bmiRange: 25, heightRange: 30, weightRange: 30 }
     ];
 
     // Save all results for each filter level
@@ -65,14 +65,27 @@ const DataProcessor = {
         const sexMatch = params.sex === 'all' || d.sex === params.sex;
         if (!sexMatch) return false;
         
-        // Handle ASA filter (allowing "any" option)
-        const asaMatch = params.asa === 'any' || 
-                         !filter.requireASA || 
-                         d.asa === parseInt(params.asa);
-        if (!asaMatch) return false;
+        // No longer filtering by ASA status
+        
+        // Handle height filter if only height is being filtered
+        if (params.height !== null && params.weight === null) {
+          if (!d.height || d.height <= 0) return false;
+          const heightMatch = d.height >= params.height - filter.heightRange && 
+                              d.height <= params.height + filter.heightRange;
+          if (!heightMatch) return false;
+        }
+        
+        // Handle weight filter if only weight is being filtered
+        if (params.weight !== null && params.height === null) {
+          if (!d.weight || d.weight <= 0) return false;
+          const weightMatch = d.weight >= params.weight - filter.weightRange && 
+                              d.weight <= params.weight + filter.weightRange;
+          if (!weightMatch) return false;
+        }
         
         // Handle BMI filter (if both height and weight are being used)
         if (bmi !== null && filter.bmiRange) {
+          if (!d.bmi || d.bmi <= 0) return false;
           const bmiMatch = d.bmi >= bmi - filter.bmiRange && 
                            d.bmi <= bmi + filter.bmiRange;
           if (!bmiMatch) return false;

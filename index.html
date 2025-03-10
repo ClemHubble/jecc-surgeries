@@ -51,20 +51,6 @@
                                 </div>
                             </div>
 
-                            <div class="input-section highlight-section" id="health-section">
-                                <div class="input-group">
-                                    <label for="asa">ASA Status</label>
-                                    <select id="asa">
-                                        <option value="any">Any</option>
-                                        <option value="1">1 - Normal healthy</option>
-                                        <option value="2">2 - Mild disease</option>
-                                        <option value="3">3 - Severe disease</option>
-                                        <option value="4">4 - Life-threatening</option>
-                                        <option value="5">5 - Moribund</option>
-                                    </select>
-                                </div>
-                            </div>
-
                             <div class="input-section highlight-section" id="physical-section">
                                 <div class="filter-options">
                                     <div class="filter-checkbox">
@@ -118,17 +104,17 @@
                                 <div class="filter-group">
                                     <label for="x-axis">X-Axis Dimension</label>
                                     <select id="x-axis">
-                                        <option value="duration" selected>Surgery Duration</option>
                                         <option value="bmi">BMI</option>
                                         <option value="ebl">Blood Loss</option>
+                                        <option value="duration" selected>Surgery Duration</option>
                                         <option value="icu">ICU Days</option>
                                     </select>
                                 </div>
                                 <div class="filter-group">
                                     <label for="y-axis">Y-Axis Dimension</label>
                                     <select id="y-axis">
-                                        <option value="ebl" selected>Blood Loss</option>
-                                        <option value="bmi">BMI</option>
+                                        <option value="bmi" selected>BMI</option>
+                                        <option value="ebl">Blood Loss</option>
                                         <option value="duration">Surgery Duration</option>
                                         <option value="icu">ICU Days</option>
                                     </select>
@@ -136,23 +122,23 @@
                                 <div class="filter-group">
                                     <label for="color-by">Color By</label>
                                     <select id="color-by">
-                                        <option value="asa" selected>ASA Score</option>
                                         <option value="none">None</option>
+                                        <option value="age">Age</option>
+                                        <option value="asa" selected>ASA Score</option>
+                                        <option value="ebl">Blood Loss</option>
+                                        <option value="bmi">BMI</option>
                                         <option value="department">Department</option>
                                         <option value="approach">Surgical Approach</option>
-                                        <option value="age">Age</option>
-                                        <option value="bmi">BMI</option>
-                                        <option value="ebl">Blood Loss</option>
                                     </select>
                                 </div>
                                 <div class="filter-group">
                                     <label for="size-by">Size By</label>
                                     <select id="size-by">
-                                        <option value="icu" selected>ICU Days</option>
                                         <option value="none">None</option>
-                                        <option value="ebl">Blood Loss</option>
-                                        <option value="duration">Surgery Duration</option>
                                         <option value="age">Age</option>
+                                        <option value="ebl">Blood Loss</option>
+                                        <option value="icu" selected>ICU Days</option>
+                                        <option value="duration">Surgery Duration</option>
                                     </select>
                                 </div>
                             </div>
@@ -247,23 +233,6 @@
                         Donec porta vestibulum turpis a ultricies. Sed vel dolor non risus faucibus tempus.</p>
                 </section>
 
-                <section class="text-section" data-viz="viz-profile" data-highlight="health-section">
-                    <h2>Your Personal Risk Factors</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam a mi vel magna vehicula pulvinar.
-                        Donec facilisis nunc nec orci finibus, sit amet ultrices dui faucibus. Donec quis eleifend orci.
-                    </p>
-                    <p>The ASA Physical Status Classification System is a critical tool used by anesthesiologists to
-                        assess a patient's pre-operative health. This score greatly influences surgical approach,
-                        anesthesia selection, and post-operative care planning.</p>
-                    <p>Nulla facilisi. Sed sit amet enim orci. Ut eu risus et ex tincidunt egestas. Sed dictum luctus
-                        enim, vel volutpat dolor ultrices ut. Donec gravida orci vitae nulla faucibus venenatis.</p>
-                    <p>Patients with higher ASA scores generally face increased risks during surgery, longer hospital
-                        stays, and higher rates of complications. Proper pre-operative assessment and preparation are
-                        essential for these higher-risk patients.</p>
-                    <p>Suspendisse non mauris nisi. Aenean convallis ultrices ipsum, nec aliquet risus commodo a. Nulla
-                        at semper nulla. Etiam eget nulla sit amet sem ultricies pharetra.</p>
-                </section>
-
                 <section class="text-section" data-viz="viz-profile" data-highlight="physical-section">
                     <h2>Physical Characteristics and Surgical Outcomes</h2>
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent euismod arcu sit amet ipsum
@@ -342,7 +311,7 @@
                         size. This allows you to explore complex relationships that simple charts can't capture.</p>
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce condimentum diam non odio sodales,
                         quis feugiat odio lacinia. Fusce euismod tellus et porta venenatis.</p>
-                    <p>For example, you might plot BMI against hospital stay, with points colored by ASA score and sized
+                    <p>For example, you might plot BMI against hospital stay, with points colored by department and sized
                         by blood loss. This reveals how these four factors interact in determining surgical outcomes.
                     </p>
                     <p>Pay special attention to clusters of points and outliers - these often represent interesting

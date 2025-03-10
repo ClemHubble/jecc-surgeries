@@ -10,7 +10,6 @@ class PatientProfile {
       age: document.getElementById("age"),
       ageValue: document.getElementById("age-value"),
       sex: document.getElementById("sex"),
-      asa: document.getElementById("asa"),
       height: document.getElementById("height"),
       heightValue: document.getElementById("height-value"),
       weight: document.getElementById("weight"),
@@ -19,6 +18,15 @@ class PatientProfile {
       filterHeight: document.getElementById("filter-height"),
       filterWeight: document.getElementById("filter-weight"),
     };
+
+    // Initialize height and weight input states based on filter checkbox states
+    if (this.controls.height && this.controls.filterHeight) {
+      this.controls.height.disabled = !this.controls.filterHeight.checked;
+    }
+    
+    if (this.controls.weight && this.controls.filterWeight) {
+      this.controls.weight.disabled = !this.controls.filterWeight.checked;
+    }
 
     this.updateProfile = this.updateProfile.bind(this);
     this.calculateBMI = this.calculateBMI.bind(this);
@@ -48,7 +56,7 @@ class PatientProfile {
       }
     });
 
-    ["sex", "asa"].forEach((id) => {
+    ["sex"].forEach((id) => {
       const dropdown = this.controls[id];
       if (dropdown) {
         dropdown.addEventListener("change", this.handleInputChange);
@@ -64,6 +72,9 @@ class PatientProfile {
           const controlName = id.replace("filter", "").toLowerCase();
           this.controls[controlName].disabled = !checkbox.checked;
           
+          // Update BMI display immediately when checkboxes change
+          this.calculateBMI();
+          
           // Update profile with new filter settings
           this.handleInputChange();
         });
@@ -72,6 +83,11 @@ class PatientProfile {
   }
 
   calculateBMI() {
+    if (!this.controls.filterHeight.checked || !this.controls.filterWeight.checked) {
+      this.controls.bmiValue.textContent = "N/A";
+      return;
+    }
+    
     const height = parseInt(this.controls.height.value) / 100;
     const weight = parseInt(this.controls.weight.value);
     const bmi = weight / (height * height);
@@ -88,7 +104,7 @@ class PatientProfile {
     const params = {
       age: parseInt(this.controls.age.value),
       sex: this.controls.sex.value,
-      asa: this.controls.asa.value,
+      asa: 'any',
       height: this.controls.filterHeight.checked ? parseInt(this.controls.height.value) : null,
       weight: this.controls.filterWeight.checked ? parseInt(this.controls.weight.value) : null,
     };
@@ -126,7 +142,6 @@ class PatientProfile {
     const icon = document.createElement("div");
     icon.innerHTML = "⚠️";
     icon.style.fontSize = "36px";
-    icon.style.marginBottom = "15px";
     messageDiv.appendChild(icon);
     
     const title = document.createElement("h3");
@@ -149,6 +164,10 @@ class PatientProfile {
     }
     messageDiv.appendChild(message);
 
+    // Get current filter states
+    const heightFilterActive = this.controls.filterHeight.checked;
+    const weightFilterActive = this.controls.filterWeight.checked;
+    
     const suggestions = document.createElement("div");
     suggestions.style.marginTop = "20px";
     suggestions.style.fontSize = "0.875rem";
@@ -159,15 +178,32 @@ class PatientProfile {
     suggestions.style.borderRadius = "var(--radius)";
     suggestions.style.border = "1px solid var(--border)";
     
-    suggestions.innerHTML = `
+    let suggestionHTML = `
       <strong>Suggestions:</strong>
       <ul style="text-align: left; margin-top: 8px; padding-left: 20px;">
         <li>Try a different age range</li>
-        <li>Select a different ASA score</li>
-        <li>Adjust height and weight parameters</li>
+    `;
+    
+    if (heightFilterActive && weightFilterActive) {
+      suggestionHTML += `
+        <li>Uncheck one or both physical parameter filters</li>
+      `;
+    } else if (heightFilterActive || weightFilterActive) {
+      suggestionHTML += `
+        <li>Uncheck all physical parameter filters</li>
+      `;
+    } else {
+      suggestionHTML += `
+        <li>Adjust physical parameter filters</li>
+      `;
+    }
+    
+    suggestionHTML += `
         <li>Try a different sex selection</li>
       </ul>
     `;
+    
+    suggestions.innerHTML = suggestionHTML;
     messageDiv.appendChild(suggestions);
   }
 
@@ -177,6 +213,9 @@ class PatientProfile {
     this.container.style.gap = "20px";
     
     this.container.innerHTML = "";
+    
+    // Add sample size info at the top
+    this.addSampleSizeInfo(profiles.length);
     
     this.createSummaryStats(profiles);
     
@@ -207,8 +246,6 @@ class PatientProfile {
     approachDiv.style.padding = "15px";
     mainRow.appendChild(approachDiv);
     this.createApproachVisualization(approachDiv, profiles);
-    
-    this.addSampleSizeInfo(profiles.length);
   }
   
   createContainer(className) {
@@ -696,24 +733,39 @@ class PatientProfile {
   }
 
   addSampleSizeInfo(count) {
-    const infoDiv = document.createElement("div");
-    infoDiv.className = "sample-info";
-    infoDiv.style.textAlign = "center";
-    infoDiv.style.color = "var(--muted-foreground)";
-    infoDiv.style.fontSize = "0.75rem";
-    infoDiv.style.marginTop = "10px";
-    infoDiv.textContent = `Predictions based on ${count} similar patient profiles.`;
-    this.container.appendChild(infoDiv);
+    const infoBox = document.createElement("div");
+    infoBox.className = "sample-info-box";
+    infoBox.style.color = "var(--foreground)";
+    infoBox.style.padding = "12px 15px";
+    infoBox.style.borderRadius = "var(--radius)";
+    // infoBox.style.marginBottom = "15px";
+    infoBox.style.border = "1px solid var(--border)";
+    // infoBox.style.backgroundColor = "var(--muted)";
+    infoBox.style.fontSize = "0.875rem";
+    infoBox.style.display = "flex";
+    infoBox.style.alignItems = "center";
+    infoBox.style.gap = "10px";
+    
+    const icon = document.createElement("span");
+    icon.textContent = "📊";
+    icon.style.fontSize = "1.2rem";
+    infoBox.appendChild(icon);
+    
+    const message = document.createElement("span");
+    message.innerHTML = `<strong>Predictions based on ${count} similar patient profiles.</strong>`;
+    infoBox.appendChild(message);
+    
+    this.container.appendChild(infoBox);
   }
 
   createVisualizationsWithWarning(profiles) {
     this.container.innerHTML = "";
     
+    // Create warning banner that includes sample size info
     const warningBanner = document.createElement("div");
     warningBanner.style.color = "var(--chart-color-accent-5)";
     warningBanner.style.padding = "12px 15px";
     warningBanner.style.borderRadius = "var(--radius)";
-    warningBanner.style.marginBottom = "15px";
     warningBanner.style.border = "1px solid var(--chart-color-accent-5)";
     warningBanner.style.fontSize = "0.875rem";
     warningBanner.style.display = "flex";
@@ -726,7 +778,7 @@ class PatientProfile {
     warningBanner.appendChild(icon);
     
     const message = document.createElement("span");
-    message.innerHTML = `<strong>Limited data available:</strong> Only ${profiles.length} matching profiles found. Results may be less reliable.`;
+    message.innerHTML = `<strong>Limited data available:</strong> Predictions based on only ${profiles.length} similar patient profiles. Results may be less reliable.`;
     warningBanner.appendChild(message);
     
     this.container.appendChild(warningBanner);
@@ -764,7 +816,5 @@ class PatientProfile {
     approachDiv.style.padding = "15px";
     mainRow.appendChild(approachDiv);
     this.createApproachVisualization(approachDiv, profiles);
-    
-    this.addSampleSizeInfo(profiles.length);
   }
 }
