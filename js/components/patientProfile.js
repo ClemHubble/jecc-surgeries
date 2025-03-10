@@ -19,11 +19,10 @@ class PatientProfile {
       filterWeight: document.getElementById("filter-weight"),
     };
 
-    // Initialize height and weight input states based on filter checkbox states
     if (this.controls.height && this.controls.filterHeight) {
       this.controls.height.disabled = !this.controls.filterHeight.checked;
     }
-    
+
     if (this.controls.weight && this.controls.filterWeight) {
       this.controls.weight.disabled = !this.controls.filterWeight.checked;
     }
@@ -62,20 +61,15 @@ class PatientProfile {
         dropdown.addEventListener("change", this.handleInputChange);
       }
     });
-    
-    // Add event listeners for the filter checkboxes
+
     ["filterHeight", "filterWeight"].forEach((id) => {
       const checkbox = this.controls[id];
       if (checkbox) {
         checkbox.addEventListener("change", () => {
-          // Enable/disable the corresponding slider when checkbox changes
           const controlName = id.replace("filter", "").toLowerCase();
           this.controls[controlName].disabled = !checkbox.checked;
-          
-          // Update BMI display immediately when checkboxes change
+
           this.calculateBMI();
-          
-          // Update profile with new filter settings
           this.handleInputChange();
         });
       }
@@ -83,11 +77,14 @@ class PatientProfile {
   }
 
   calculateBMI() {
-    if (!this.controls.filterHeight.checked || !this.controls.filterWeight.checked) {
+    if (
+      !this.controls.filterHeight.checked ||
+      !this.controls.filterWeight.checked
+    ) {
       this.controls.bmiValue.textContent = "N/A";
       return;
     }
-    
+
     const height = parseInt(this.controls.height.value) / 100;
     const weight = parseInt(this.controls.weight.value);
     const bmi = weight / (height * height);
@@ -104,9 +101,13 @@ class PatientProfile {
     const params = {
       age: parseInt(this.controls.age.value),
       sex: this.controls.sex.value,
-      asa: 'any',
-      height: this.controls.filterHeight.checked ? parseInt(this.controls.height.value) : null,
-      weight: this.controls.filterWeight.checked ? parseInt(this.controls.weight.value) : null,
+      asa: "any",
+      height: this.controls.filterHeight.checked
+        ? parseInt(this.controls.height.value)
+        : null,
+      weight: this.controls.filterWeight.checked
+        ? parseInt(this.controls.weight.value)
+        : null,
     };
 
     const similarProfiles = dataService.getProfileData(params);
@@ -129,7 +130,7 @@ class PatientProfile {
 
   showNoDataMessage(count) {
     this.container.innerHTML = "";
-    
+
     const messageDiv = document.createElement("div");
     messageDiv.className = "no-data-msg";
     this.container.appendChild(messageDiv);
@@ -138,34 +139,34 @@ class PatientProfile {
     icon.innerHTML = "⚠️";
     icon.className = "warning-icon";
     messageDiv.appendChild(icon);
-    
+
     const title = document.createElement("h3");
     title.textContent = "Insufficient Data";
     title.className = "warning-title";
     messageDiv.appendChild(title);
 
     const message = document.createElement("p");
-    
+
     if (count === 0) {
-      message.innerHTML = "No matching patient profiles found with your current criteria.<br>Please adjust your parameters to broaden your search.";
+      message.innerHTML =
+        "No matching patient profiles found with your current criteria.<br>Please adjust your parameters to broaden your search.";
     } else {
       message.innerHTML = `Only <strong>${count}</strong> matching patient profiles found.<br>This is not enough data to make reliable predictions.<br>Please adjust your parameters to broaden your search.`;
     }
     messageDiv.appendChild(message);
 
-    // Get current filter states
     const heightFilterActive = this.controls.filterHeight.checked;
     const weightFilterActive = this.controls.filterWeight.checked;
-    
+
     const suggestions = document.createElement("div");
     suggestions.className = "suggestions-box";
-    
+
     let suggestionHTML = `
       <strong>Suggestions:</strong>
       <ul class="suggestions-list">
         <li>Try a different age range</li>
     `;
-    
+
     if (heightFilterActive && weightFilterActive) {
       suggestionHTML += `
         <li>Uncheck one or both physical parameter filters</li>
@@ -179,12 +180,12 @@ class PatientProfile {
         <li>Adjust physical parameter filters</li>
       `;
     }
-    
+
     suggestionHTML += `
         <li>Try a different sex selection</li>
       </ul>
     `;
-    
+
     suggestions.innerHTML = suggestionHTML;
     messageDiv.appendChild(suggestions);
   }
@@ -192,21 +193,19 @@ class PatientProfile {
   createVisualizations(profiles) {
     this.container.className = "profile-visualization-container";
     this.container.innerHTML = "";
-    
-    // Add sample size info at the top
+
     this.addSampleSizeInfo(profiles.length);
-    
     this.createSummaryStats(profiles);
-    
+
     const surgeriesSection = this.createContainer();
     this.container.appendChild(surgeriesSection);
     this.createSurgeryVisualization(surgeriesSection, profiles);
-    
+
     const approachSection = this.createContainer();
     this.container.appendChild(approachSection);
     this.createApproachVisualization(approachSection, profiles);
   }
-  
+
   createContainer(className) {
     const container = document.createElement("div");
     container.className = className || "results-section";
@@ -215,18 +214,19 @@ class PatientProfile {
 
   createSummaryStats(profiles) {
     const statsSection = this.createContainer();
-    
+
     const title = document.createElement("h3");
     title.textContent = "Summary Statistics";
     title.className = "results-section-title";
     statsSection.appendChild(title);
-    
+
     const statsGrid = document.createElement("div");
     statsGrid.style.display = "grid";
-    statsGrid.style.gridTemplateColumns = "repeat(auto-fit, minmax(200px, 1fr))";
+    statsGrid.style.gridTemplateColumns =
+      "repeat(auto-fit, minmax(200px, 1fr))";
     statsGrid.style.gap = "15px";
     statsSection.appendChild(statsGrid);
-    
+
     const stats = [
       {
         label: "Surgery Duration",
@@ -235,7 +235,7 @@ class PatientProfile {
           0,
           "min"
         ),
-        icon: "⏱️"
+        icon: "⏱️",
       },
       {
         label: "ICU Days",
@@ -244,7 +244,7 @@ class PatientProfile {
           1,
           "days"
         ),
-        icon: "🏥"
+        icon: "🏥",
       },
       {
         label: "Estimated Blood Loss",
@@ -253,16 +253,18 @@ class PatientProfile {
           0,
           "mL"
         ),
-        icon: "🩸"
+        icon: "🩸",
       },
       {
         label: "Mortality Rate",
-        value: `${(d3.mean(profiles, (d) => d.death_inhosp) * 100).toFixed(1)}%`,
-        icon: "📊"
+        value: `${(d3.mean(profiles, (d) => d.death_inhosp) * 100).toFixed(
+          1
+        )}%`,
+        icon: "📊",
       },
     ];
-    
-    stats.forEach(stat => {
+
+    stats.forEach((stat) => {
       const statCard = document.createElement("div");
       statCard.style.backgroundColor = "var(--background)";
       statCard.style.padding = "12px";
@@ -270,13 +272,13 @@ class PatientProfile {
       statCard.style.border = "1px solid var(--border)";
       statCard.style.textAlign = "center";
       statsGrid.appendChild(statCard);
-      
+
       const icon = document.createElement("div");
       icon.textContent = stat.icon;
       icon.style.fontSize = "24px";
       icon.style.marginBottom = "8px";
       statCard.appendChild(icon);
-      
+
       const value = document.createElement("div");
       value.textContent = stat.value;
       value.style.fontSize = "1.2rem";
@@ -285,7 +287,7 @@ class PatientProfile {
       value.style.fontFamily = "var(--font-mono)";
       value.style.marginBottom = "5px";
       statCard.appendChild(value);
-      
+
       const label = document.createElement("div");
       label.textContent = stat.label;
       label.style.fontSize = "0.875rem";
@@ -324,7 +326,12 @@ class PatientProfile {
       .append("svg")
       .attr("width", "100%")
       .attr("height", height + margin.top + margin.bottom)
-      .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+      .attr(
+        "viewBox",
+        `0 0 ${width + margin.left + margin.right} ${
+          height + margin.top + margin.bottom
+        }`
+      )
       .attr("preserveAspectRatio", "xMidYMid meet")
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -349,8 +356,9 @@ class PatientProfile {
       .attr("transform", `translate(0,${height})`)
       .call(d3.axisBottom(x).ticks(5))
       .style("font-size", "10px");
-    
-    svg.append("text")
+
+    svg
+      .append("text")
       .attr("x", width / 2)
       .attr("y", height + 30)
       .attr("text-anchor", "middle")
@@ -363,7 +371,7 @@ class PatientProfile {
       .call(d3.axisLeft(y))
       .style("font-size", "12px")
       .selectAll("text")
-      .each(function(d) {
+      .each(function (d) {
         let shortName = d;
         if (d.length > 25) {
           shortName = d.substring(0, 23) + "...";
@@ -373,12 +381,13 @@ class PatientProfile {
       .style("text-anchor", "end")
       .attr("dx", "-0.5em")
       .append("title")
-      .text(d => d);
+      .text((d) => d);
 
     const totalPatients = d3.sum(topSurgeries, (d) => d[1]);
 
-    // Use a single color for all bars - primary color
-    const surgeryBarColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+    const surgeryBarColor = getComputedStyle(document.documentElement)
+      .getPropertyValue("--primary")
+      .trim();
 
     svg
       .selectAll("rect")
@@ -399,24 +408,24 @@ class PatientProfile {
       .enter()
       .append("text")
       .attr("class", "bar-label")
-      .attr("y", d => y(d[0]) + y.bandwidth() / 2)
-      .attr("x", d => {
+      .attr("y", (d) => y(d[0]) + y.bandwidth() / 2)
+      .attr("x", (d) => {
         const barWidth = x(d[1]);
         const percentage = ((d[1] / totalPatients) * 100).toFixed(1);
         const labelText = `${d[1]} (${percentage}%)`;
         const textWidth = labelText.length * 6;
-        
+
         if (barWidth > textWidth + 10) {
           return barWidth - 8;
         }
         return barWidth + 5;
       })
-      .attr("text-anchor", d => {
+      .attr("text-anchor", (d) => {
         const barWidth = x(d[1]);
         const percentage = ((d[1] / totalPatients) * 100).toFixed(1);
         const labelText = `${d[1]} (${percentage}%)`;
         const textWidth = labelText.length * 6;
-        
+
         if (barWidth > textWidth + 10) {
           return "end";
         }
@@ -425,34 +434,30 @@ class PatientProfile {
       .attr("dy", ".35em")
       .style("font-size", "9px")
       .style("font-family", "var(--font-mono)")
-      .style("fill", d => {
+      .style("fill", (d) => {
         const barWidth = x(d[1]);
         const percentage = ((d[1] / totalPatients) * 100).toFixed(1);
         const labelText = `${d[1]} (${percentage}%)`;
         const textWidth = labelText.length * 6;
-        
+
         if (barWidth > textWidth + 10) {
           return "var(--primary-foreground)";
         }
         return "var(--foreground)";
       })
       .style("font-weight", "500")
-      .text(d => {
+      .text((d) => {
         const percentage = ((d[1] / totalPatients) * 100).toFixed(1);
         return `${d[1]} (${percentage}%)`;
       });
 
     svg
       .selectAll("rect")
-      .on("mouseover", function(event, d) {
-        d3.select(this)
-          .attr("fill", "var(--destructive)")
-          .attr("opacity", 0.8);
+      .on("mouseover", function (event, d) {
+        d3.select(this).attr("fill", "var(--destructive)").attr("opacity", 0.8);
       })
-      .on("mouseout", function(event, d) {
-        d3.select(this)
-          .attr("fill", surgeryBarColor)
-          .attr("opacity", 1);
+      .on("mouseout", function (event, d) {
+        d3.select(this).attr("fill", surgeryBarColor).attr("opacity", 1);
       });
   }
 
@@ -462,27 +467,25 @@ class PatientProfile {
     title.className = "results-section-title";
     container.appendChild(title);
 
-    // Get approach counts
     const approaches = d3
       .rollups(
         profiles,
         (v) => v.length,
         (d) => d.approach || "Unknown"
       )
-      .map(d => ({
+      .map((d) => ({
         name: d[0],
         value: d[1],
-        percentage: (d[1] / profiles.length) * 100
+        percentage: (d[1] / profiles.length) * 100,
       }))
       .sort((a, b) => b.value - a.value);
-    
-    // Calculate total number of surgeries
+
     const total = profiles.length;
 
     const width = 125;
     const height = 125;
     const radius = Math.min(width, height) / 2;
-    
+
     const chartContainer = document.createElement("div");
     chartContainer.className = "approach-chart-container";
     container.appendChild(chartContainer);
@@ -502,13 +505,27 @@ class PatientProfile {
       .attr("transform", `translate(${width / 2},${height / 2})`);
 
     const chartColors = [
-      getComputedStyle(document.documentElement).getPropertyValue('--chart-color-accent-3').trim(),
-      getComputedStyle(document.documentElement).getPropertyValue('--chart-color-accent-2').trim(),
-      getComputedStyle(document.documentElement).getPropertyValue('--chart-color-accent-1').trim(),
-      getComputedStyle(document.documentElement).getPropertyValue('--chart-color-accent-4').trim(),
-      getComputedStyle(document.documentElement).getPropertyValue('--chart-color-accent-5').trim(),
-      getComputedStyle(document.documentElement).getPropertyValue('--chart-color-1').trim(),
-      getComputedStyle(document.documentElement).getPropertyValue('--chart-color-2').trim()
+      getComputedStyle(document.documentElement)
+        .getPropertyValue("--chart-color-accent-3")
+        .trim(),
+      getComputedStyle(document.documentElement)
+        .getPropertyValue("--chart-color-accent-2")
+        .trim(),
+      getComputedStyle(document.documentElement)
+        .getPropertyValue("--chart-color-accent-1")
+        .trim(),
+      getComputedStyle(document.documentElement)
+        .getPropertyValue("--chart-color-accent-4")
+        .trim(),
+      getComputedStyle(document.documentElement)
+        .getPropertyValue("--chart-color-accent-5")
+        .trim(),
+      getComputedStyle(document.documentElement)
+        .getPropertyValue("--chart-color-1")
+        .trim(),
+      getComputedStyle(document.documentElement)
+        .getPropertyValue("--chart-color-2")
+        .trim(),
     ];
 
     const color = d3
@@ -516,17 +533,20 @@ class PatientProfile {
       .domain(approaches.map((d) => d.name))
       .range(chartColors);
 
-    const pie = d3.pie()
-      .value(d => d.value)
+    const pie = d3
+      .pie()
+      .value((d) => d.value)
       .sort(null);
 
-    const arcGenerator = d3.arc()
+    const arcGenerator = d3
+      .arc()
       .innerRadius(radius * 0.5)
       .outerRadius(radius * 0.8)
       .cornerRadius(3)
       .padAngle(0.02);
 
-    const hoverArc = d3.arc()
+    const hoverArc = d3
+      .arc()
       .innerRadius(radius * 0.45)
       .outerRadius(radius * 0.85)
       .cornerRadius(4)
@@ -538,30 +558,26 @@ class PatientProfile {
       .enter()
       .append("path")
       .attr("d", arcGenerator)
-      .attr("fill", d => color(d.data.name))
+      .attr("fill", (d) => color(d.data.name))
       .attr("stroke", "var(--background)")
       .attr("stroke-width", 1)
       .style("transition", "all 0.2s ease")
-      .on("mouseover", function(event, d) {
-        d3.select(this)
-          .attr("d", hoverArc)
-          .attr("stroke-width", 2);
-        
+      .on("mouseover", function (event, d) {
+        d3.select(this).attr("d", hoverArc).attr("stroke-width", 2);
+
         centerText
           .text(`${d.data.percentage.toFixed(1)}%`)
           .attr("fill", color(d.data.name));
-        
+
         centerLabel.text(d.data.name);
       })
-      .on("mouseout", function() {
-        d3.select(this)
-          .attr("d", arcGenerator)
-          .attr("stroke-width", 1);
-        
+      .on("mouseout", function () {
+        d3.select(this).attr("d", arcGenerator).attr("stroke-width", 1);
+
         centerText.text(`${total}`);
         centerLabel.text("surgeries");
       });
-      
+
     const centerText = svg
       .append("text")
       .attr("text-anchor", "middle")
@@ -571,7 +587,7 @@ class PatientProfile {
       .attr("fill", "var(--foreground)")
       .style("font-family", "var(--font-mono)")
       .text(`${total}`);
-    
+
     const centerLabel = svg
       .append("text")
       .attr("text-anchor", "middle")
@@ -590,7 +606,7 @@ class PatientProfile {
     legendContainer.style.maxHeight = "180px";
     chartContainer.appendChild(legendContainer);
 
-    approaches.forEach(d => {
+    approaches.forEach((d) => {
       const item = document.createElement("div");
       item.style.display = "flex";
       item.style.alignItems = "center";
@@ -628,54 +644,43 @@ class PatientProfile {
       label.appendChild(percent);
 
       item.addEventListener("mouseover", () => {
-        svg.selectAll("path").each(function(pieData) {
+        svg.selectAll("path").each(function (pieData) {
           if (pieData.data.name === d.name) {
-            d3.select(this)
-              .attr("d", hoverArc)
-              .attr("stroke-width", 2);
-              
+            d3.select(this).attr("d", hoverArc).attr("stroke-width", 2);
+
             centerText
               .text(`${d.percentage.toFixed(1)}%`)
               .attr("fill", color(d.name));
-            
+
             centerLabel.text(d.name);
           }
         });
-        
+
         item.style.backgroundColor = "var(--accent)";
       });
 
       item.addEventListener("mouseout", () => {
-        svg.selectAll("path")
-          .attr("d", arcGenerator)
-          .attr("stroke-width", 1);
-          
+        svg.selectAll("path").attr("d", arcGenerator).attr("stroke-width", 1);
+
         centerText.text(`${total}`);
         centerLabel.text("surgeries");
-        
+
         item.style.backgroundColor = "transparent";
       });
     });
   }
 
-  createOutcomeStats(profiles) {
-  }
-
-  createApproachBreakdown(profiles) {
-  }
-
   addSampleSizeInfo(count) {
     const sampleInfoDiv = document.createElement("div");
     sampleInfoDiv.className = "sample-info";
-    
-    // Calculate percentage of total patients
+
     const totalPatients = dataService.getData().length;
-    const percentage = (count / totalPatients * 100).toFixed(1);
-    
+    const percentage = ((count / totalPatients) * 100).toFixed(1);
+
     const sampleText = document.createElement("p");
     sampleText.className = "sample-text";
     sampleText.innerHTML = `Analysis based on <strong style="font-family: var(--font-mono);">${count}</strong> similar patient profiles <span style="color: var(--muted-foreground);">(<span style="font-family: var(--font-mono);">${percentage}%</span> of total)</span>`;
-    
+
     sampleInfoDiv.appendChild(sampleText);
     this.container.appendChild(sampleInfoDiv);
   }
@@ -683,37 +688,32 @@ class PatientProfile {
   createVisualizationsWithWarning(profiles) {
     this.container.className = "profile-visualization-container";
     this.container.innerHTML = "";
-    
+
     const warningSection = document.createElement("div");
     warningSection.className = "warning-message";
-    
+
     const warningContent = document.createElement("div");
     warningContent.style.display = "flex";
     warningContent.style.alignItems = "center";
     warningContent.style.gap = "var(--space-3)";
     warningSection.appendChild(warningContent);
-    
+
     const warningIcon = document.createElement("span");
     warningIcon.textContent = "⚠️";
     warningIcon.style.fontSize = "1rem";
     warningContent.appendChild(warningIcon);
-    
+
     const warningText = document.createElement("span");
     warningText.innerHTML = `<strong>Limited Data:</strong> Results based on only ${profiles.length} profiles. May be less reliable.`;
     warningContent.appendChild(warningText);
-    
     this.container.appendChild(warningSection);
-    
-    // Add sample size info
     this.addSampleSizeInfo(profiles.length);
-    
-    // Create the visualizations
     this.createSummaryStats(profiles);
-    
+
     const surgeriesSection = this.createContainer();
     this.container.appendChild(surgeriesSection);
     this.createSurgeryVisualization(surgeriesSection, profiles);
-    
+
     const approachSection = this.createContainer();
     this.container.appendChild(approachSection);
     this.createApproachVisualization(approachSection, profiles);

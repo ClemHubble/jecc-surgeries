@@ -6,11 +6,11 @@ class DimensionsExplorer {
       return;
     }
 
-    if (!document.querySelector('.tooltip')) {
-      d3.select('body')
-        .append('div')
-        .attr('class', 'tooltip')
-        .style('opacity', 0);
+    if (!document.querySelector(".tooltip")) {
+      d3.select("body")
+        .append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
     }
 
     this.elements = {
@@ -169,62 +169,65 @@ class DimensionsExplorer {
       }
     });
 
-    if (this.elements.ageMin && this.elements.ageMax && 
-        this.elements.ageRangeMin && this.elements.ageRangeMax) {
-      
+    if (
+      this.elements.ageMin &&
+      this.elements.ageMax &&
+      this.elements.ageRangeMin &&
+      this.elements.ageRangeMax
+    ) {
       this.elements.ageMin.addEventListener("input", () => {
         const minValue = parseInt(this.elements.ageMin.value);
         const maxValue = parseInt(this.elements.ageMax.value);
-        
+
         this.elements.ageRangeMin.value = minValue;
-        
+
         if (minValue > maxValue) {
           this.elements.ageMax.value = minValue;
           this.elements.ageRangeMax.value = minValue;
         }
-        
+
         this.handleFiltersChange();
       });
 
       this.elements.ageMax.addEventListener("input", () => {
         const minValue = parseInt(this.elements.ageMin.value);
         const maxValue = parseInt(this.elements.ageMax.value);
-        
+
         this.elements.ageRangeMax.value = maxValue;
-        
+
         if (maxValue < minValue) {
           this.elements.ageMin.value = maxValue;
           this.elements.ageRangeMin.value = maxValue;
         }
-        
+
         this.handleFiltersChange();
       });
 
       this.elements.ageRangeMin.addEventListener("input", () => {
         const minValue = parseInt(this.elements.ageRangeMin.value);
         const maxValue = parseInt(this.elements.ageRangeMax.value);
-        
+
         this.elements.ageMin.value = minValue;
-        
+
         if (minValue > maxValue) {
           this.elements.ageMax.value = minValue;
           this.elements.ageRangeMax.value = minValue;
         }
-        
+
         this.handleFiltersChange();
       });
 
       this.elements.ageRangeMax.addEventListener("input", () => {
         const minValue = parseInt(this.elements.ageRangeMin.value);
         const maxValue = parseInt(this.elements.ageRangeMax.value);
-        
+
         this.elements.ageMax.value = maxValue;
-        
+
         if (maxValue < minValue) {
           this.elements.ageMin.value = maxValue;
           this.elements.ageRangeMin.value = maxValue;
         }
-        
+
         this.handleFiltersChange();
       });
     }
@@ -237,7 +240,7 @@ class DimensionsExplorer {
   getFilterSettings() {
     return {
       ageMin: parseInt(this.elements.ageMin.value),
-      ageMax: parseInt(this.elements.ageMax.value)
+      ageMax: parseInt(this.elements.ageMax.value),
     };
   }
 
@@ -475,16 +478,13 @@ class DimensionsExplorer {
   showTooltip(event, d, xAxis, yAxis, colorBy, sizeBy) {
     const tooltip = d3.select("body .tooltip");
     const tooltipNode = tooltip.node();
-    
+
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-    
+
     const chartRect = this.chartContainer.getBoundingClientRect();
-    
-    tooltip
-      .transition()
-      .duration(200)
-      .style("opacity", 0.9);
+
+    tooltip.transition().duration(200).style("opacity", 0.9);
 
     let tooltipContent = `
             <div style="font-weight: bold; margin-bottom: 5px;">${
@@ -533,21 +533,19 @@ class DimensionsExplorer {
 
     const tooltipWidth = tooltipNode.offsetWidth;
     const tooltipHeight = tooltipNode.offsetHeight;
-    
+
     let left = event.clientX + 10;
     let top = event.clientY - 10;
-    
+
     if (left + tooltipWidth > viewportWidth) {
       left = event.clientX - tooltipWidth - 10;
     }
-    
+
     if (top + tooltipHeight > viewportHeight) {
       top = event.clientY - tooltipHeight - 10;
     }
-    
-    tooltip
-      .style("left", left + "px")
-      .style("top", top + "px");
+
+    tooltip.style("left", left + "px").style("top", top + "px");
   }
 
   moveTooltip(event) {
@@ -557,28 +555,23 @@ class DimensionsExplorer {
     const viewportHeight = window.innerHeight;
     const tooltipWidth = tooltipNode.offsetWidth;
     const tooltipHeight = tooltipNode.offsetHeight;
-    
+
     let left = event.clientX + 10;
     let top = event.clientY - 10;
-    
+
     if (left + tooltipWidth > viewportWidth) {
       left = event.clientX - tooltipWidth - 10;
     }
-    
+
     if (top + tooltipHeight > viewportHeight) {
       top = event.clientY - tooltipHeight - 10;
     }
-    
-    tooltip
-      .style("left", left + "px")
-      .style("top", top + "px");
+
+    tooltip.style("left", left + "px").style("top", top + "px");
   }
 
   hideTooltip() {
-    d3.select("body .tooltip")
-      .transition()
-      .duration(500)
-      .style("opacity", 0);
+    d3.select("body .tooltip").transition().duration(500).style("opacity", 0);
   }
 
   updateLegend(dimension, data) {
@@ -599,9 +592,7 @@ class DimensionsExplorer {
         .append("div")
         .attr("class", "legend-items");
 
-      const item = legendItems
-        .append("div")
-        .attr("class", "legend-item");
+      const item = legendItems.append("div").attr("class", "legend-item");
 
       item
         .append("div")
@@ -625,9 +616,7 @@ class DimensionsExplorer {
         const uniqueValues = range.categories.sort();
 
         uniqueValues.forEach((value) => {
-          const item = legendItems
-            .append("div")
-            .attr("class", "legend-item");
+          const item = legendItems.append("div").attr("class", "legend-item");
 
           item
             .append("div")
@@ -643,31 +632,26 @@ class DimensionsExplorer {
           "2 - Mild disease",
           "3 - Severe disease",
           "4 - Life-threatening",
-          "5 - Moribund"
+          "5 - Moribund",
         ];
-        
+
         asaValues.forEach((value, i) => {
-          const item = legendItems
-            .append("div")
-            .attr("class", "legend-item");
+          const item = legendItems.append("div").attr("class", "legend-item");
 
           item
             .append("div")
             .attr("class", "legend-color")
             .style("background-color", this.chart.colorScale(value));
 
-          item
-            .append("div")
-            .attr("class", "legend-label")
-            .text(asaLabels[i]);
+          item.append("div").attr("class", "legend-label").text(asaLabels[i]);
         });
       } else {
         const min = range.min;
         const max = range.max;
-        
+
         let numBuckets = 5;
         if (max - min <= 10) numBuckets = 4;
-        
+
         const gradientContainer = colorSection
           .append("div")
           .style("width", "100%")
@@ -682,9 +666,8 @@ class DimensionsExplorer {
           .append("div")
           .attr("class", "legend-gradient");
 
-        // Calculate the width for each step based on the number of buckets
         const stepWidth = 100 / numBuckets;
-        
+
         for (let i = 0; i < numBuckets; i++) {
           const value = min + (i / (numBuckets - 1)) * (max - min);
           gradient
@@ -694,47 +677,42 @@ class DimensionsExplorer {
             .style("width", `${stepWidth}%`)
             .style("left", `${i * stepWidth}%`);
         }
-        
+
         const gradientLabels = gradientContainer
           .append("div")
           .attr("class", "gradient-labels");
-          
-        // Create label for min (left)
+
         gradientLabels
           .append("div")
           .attr("class", "gradient-label")
           .style("left", "0")
           .text(Formatters.formatValue(min, dimension));
-        
-        // Create label for max (right)
+
         gradientLabels
           .append("div")
           .attr("class", "gradient-label")
           .style("left", "100%")
           .text(Formatters.formatValue(max, dimension));
-        
-        // Add more labels based on the number of buckets
+
         if (numBuckets >= 5) {
-          // Add 25%, 50%, and 75% labels
           gradientLabels
             .append("div")
             .attr("class", "gradient-label")
             .style("left", "25%")
             .text(Formatters.formatValue(min + (max - min) * 0.25, dimension));
-            
+
           gradientLabels
             .append("div")
             .attr("class", "gradient-label")
             .style("left", "50%")
             .text(Formatters.formatValue(min + (max - min) * 0.5, dimension));
-            
-            gradientLabels
-              .append("div")
-              .attr("class", "gradient-label")
-              .style("left", "75%")
-              .text(Formatters.formatValue(min + (max - min) * 0.75, dimension));
+
+          gradientLabels
+            .append("div")
+            .attr("class", "gradient-label")
+            .style("left", "75%")
+            .text(Formatters.formatValue(min + (max - min) * 0.75, dimension));
         } else if (numBuckets >= 3) {
-          // Just add the middle label
           gradientLabels
             .append("div")
             .attr("class", "gradient-label")
@@ -747,13 +725,21 @@ class DimensionsExplorer {
 
   showNoDataMessage() {
     this.chart.pointsGroup.selectAll("*").remove();
-    
+
     const noDataMessage = this.chart.svg
       .append("text")
       .attr("class", "no-data-text")
       .attr("text-anchor", "middle")
-      .attr("x", (this.chart.width - this.chart.margin.left - this.chart.margin.right) / 2)
-      .attr("y", (this.chart.height - this.chart.margin.top - this.chart.margin.bottom) / 2)
+      .attr(
+        "x",
+        (this.chart.width - this.chart.margin.left - this.chart.margin.right) /
+          2
+      )
+      .attr(
+        "y",
+        (this.chart.height - this.chart.margin.top - this.chart.margin.bottom) /
+          2
+      )
       .text("No data available for the current filter settings");
   }
 
