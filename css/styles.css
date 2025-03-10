@@ -2,6 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    letter-spacing: -3%;
 }
 
 :root {
@@ -22,7 +23,7 @@
     --destructive: #ef4444;
     --destructive-foreground: #f8fafc;
     --ring: #e5e7eb;
-    --radius: 0.5rem;
+    --radius: 0rem;
     
     --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --font-mono: "Geist Mono", Consolas, "Courier New", monospace;
@@ -61,7 +62,7 @@ body {
 }
 
 strong, b {
-    font-weight: 600;
+    font-weight: 500;
 }
 
 code, pre, .mono {
@@ -71,7 +72,7 @@ code, pre, .mono {
 
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-sans);
-    font-weight: 600;
+    font-weight: 500;
     letter-spacing: -0.03em;
     line-height: 1.2;
     margin-bottom: var(--space-2);
@@ -221,7 +222,7 @@ footer {
 
 .text-section h2 {
     margin-bottom: var(--space-4);
-    font-weight: 600;
+    font-weight: 500;
     letter-spacing: -0.03em;
     color: var(--foreground);
 }
@@ -779,7 +780,7 @@ footer {
 }
 
 .stat-value {
-    font-weight: 600;
+    font-weight: 500;
     font-size: 1.125rem;
     font-family: var(--font-mono);
 }
@@ -815,7 +816,7 @@ footer {
 
 .warning-message strong {
     color: var(--chart-color-accent-5);
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .warning-icon {
@@ -908,7 +909,7 @@ footer {
 }
 
 .sample-text strong {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .no-data-text {

@@ -282,7 +282,7 @@ class PatientProfile {
       const value = document.createElement("div");
       value.textContent = stat.value;
       value.style.fontSize = "1.2rem";
-      value.style.fontWeight = "bold";
+      value.style.fontWeight = "500";
       value.style.color = "var(--primary)";
       value.style.fontFamily = "var(--font-mono)";
       value.style.marginBottom = "5px";
@@ -583,7 +583,7 @@ class PatientProfile {
       .attr("text-anchor", "middle")
       .attr("dy", "-0.2em")
       .attr("font-size", "1rem")
-      .attr("font-weight", "bold")
+      .attr("font-weight", "500")
       .attr("fill", "var(--foreground)")
       .style("font-family", "var(--font-mono)")
       .text(`${total}`);
@@ -638,7 +638,7 @@ class PatientProfile {
 
       const percent = document.createElement("span");
       percent.textContent = `${d.percentage.toFixed(1)}%`;
-      percent.style.fontWeight = "bold";
+      percent.style.fontWeight = "500";
       percent.style.color = "var(--primary)";
       percent.style.fontFamily = "var(--font-mono)";
       label.appendChild(percent);

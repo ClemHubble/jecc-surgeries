@@ -24,7 +24,7 @@ const tooltip = d3.select("#main-chart")
     .style("background", "#fff")
     .style("padding", "6px")
     .style("border", "1px solid #ccc")
-    .style("border-radius", "4px");
+    // .style("border-radius", "4px");
 
 d3.csv("vitaldb_cases.csv").then(data => {
     data.forEach(d => {
@@ -100,13 +100,13 @@ d3.csv("vitaldb_cases.csv").then(data => {
                 legendItem.append("div")
                     .style("width", "20px")
                     .style("height", "20px")
-                    .style("border-radius", "5px")
+                    // .style("border-radius", "5px")
                     .style("background-color", d.color)
                     .style("margin-right", "10px");
 
                 legendItem.append("span")
                     .style("color", d.color)
-                    .style("font-weight", "bold")
+                    .style("font-weight", "500")
                     .text(d.label);
             });
         }

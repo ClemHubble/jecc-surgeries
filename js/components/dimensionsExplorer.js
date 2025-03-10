@@ -487,7 +487,7 @@ class DimensionsExplorer {
     tooltip.transition().duration(200).style("opacity", 0.9);
 
     let tooltipContent = `
-            <div style="font-weight: bold; margin-bottom: 5px;">${
+            <div style="font-weight: 500; margin-bottom: 5px;">${
               d.opname || "Unknown Surgery"
             }</div>
             <div><strong>Age:</strong> ${d.age} years</div>
