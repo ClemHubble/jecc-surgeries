@@ -265,10 +265,13 @@ footer {
     background-color: var(--background);
     border-radius: var(--radius);
     border: 1px solid var(--border);
-    overflow: hidden;
     height: 100%;
     display: flex;
     flex-direction: column;
+}
+
+.input-panel {
+    overflow-y: auto;
 }
 
 .input-title {
@@ -802,16 +805,35 @@ footer {
     border: 1px solid var(--border);
 }
 
-.warning-icon {
-    font-size: 36px;
-    margin-bottom: var(--space-2);
+.warning-message {
+    padding: var(--space-3);
+    border-bottom: 1px solid var(--border);
+    color: var(--chart-color-accent-5);
+    font-size: 0.875rem;
+    background-color: rgba(245, 158, 11, 0.1);
 }
 
-.warning-title {
-    color: var(--destructive);
-    margin-bottom: var(--space-3);
-    font-size: 1.2rem;
-    font-weight: 500;
+.warning-message strong {
+    color: var(--chart-color-accent-5);
+    font-weight: 600;
+}
+
+.warning-icon {
+    font-size: 1rem;
+    color: var(--muted-foreground);
+}
+
+.sample-info {
+    padding: var(--space-3);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+
+.sample-text {
+    font-size: 0.875rem;
+    color: var(--foreground);
+    margin: 0;
+    text-align: center;
 }
 
 .suggestions-box {
@@ -833,22 +855,6 @@ footer {
 
 .suggestions-list li {
     margin-bottom: var(--space-2);
-}
-
-.info-text {
-    background-color: var(--secondary);
-    padding: var(--space-3);
-    border-radius: var(--radius);
-    border-left: 3px solid var(--primary);
-    margin-bottom: var(--space-4);
-}
-
-.info-text span {
-    font-weight: 500;
-}
-
-.info-text small {
-    opacity: 0.8;
 }
 
 .visualization-card {
@@ -914,12 +920,6 @@ footer {
 .chart-wrapper {
   width: 100%;
   overflow: hidden;
-}
-
-.warning-message {
-  background-color: var(--secondary);
-  border-left-color: var(--chart-color-accent-5);
-  color: var(--foreground);
 }
 
 .approach-chart-container {

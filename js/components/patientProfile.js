@@ -684,21 +684,23 @@ class PatientProfile {
     this.container.className = "profile-visualization-container";
     this.container.innerHTML = "";
     
-    // Add warning message
-    const warningSection = this.createContainer();
+    const warningSection = document.createElement("div");
+    warningSection.className = "warning-message";
     
-    const warningMessage = document.createElement("div");
-    warningMessage.className = "info-text warning-message";
-    warningSection.appendChild(warningMessage);
+    const warningContent = document.createElement("div");
+    warningContent.style.display = "flex";
+    warningContent.style.alignItems = "center";
+    warningContent.style.gap = "var(--space-3)";
+    warningSection.appendChild(warningContent);
     
     const warningIcon = document.createElement("span");
     warningIcon.textContent = "⚠️";
-    warningIcon.className = "warning-icon";
-    warningMessage.appendChild(warningIcon);
+    warningIcon.style.fontSize = "1rem";
+    warningContent.appendChild(warningIcon);
     
     const warningText = document.createElement("span");
-    warningText.innerHTML = `<strong>Limited Data:</strong> Only ${profiles.length} matching profiles found. Results may be less reliable.`;
-    warningMessage.appendChild(warningText);
+    warningText.innerHTML = `<strong>Limited Data:</strong> Results based on only ${profiles.length} profiles. May be less reliable.`;
+    warningContent.appendChild(warningText);
     
     this.container.appendChild(warningSection);
     
