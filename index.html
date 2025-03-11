@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Surgical Outcomes Explorer</title>
+    <title>Who survives the operating room?</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,10 +19,16 @@
 
     <header>
         <div class="container">
-            <h1>Surgical Outcomes Explorer</h1>
-            <div class="subtitle">Exploring patterns in the VitalDB dataset</div>
+            <h1>Who survives the operating room?</h1>
+            <div class="citation">Lee HC, Park Y, Yoon SB, Yang SM, Park D, Jung CW. VitalDB, a high-fidelity multi-parameter vital signs database in surgical patients. Sci Data. 2022 Jun 8;9(1):279. <a href="https://doi.org/10.1038/s41597-022-01411-5">doi: 10.1038/s41597-022-01411-5</a>. PMID: 35676300; PMCID: PMC9178032.</div>
         </div>
     </header>
+
+    <div class="hook-section">
+        <div class="container">
+            <p>Every surgical procedure carries risk. But how do factors like age, BMI, surgical approach, and duration affect patient outcomes? Explore this interactive visualization of 6,388 surgeries from the VitalDB dataset to understand patterns of survival and mortality in the operating room. Discover how your personal risk factors might influence surgical outcomes, and gain insights that could inform medical decisions for you or your loved ones.</p>
+        </div>
+    </div>
 
     <div class="container">
         <div class="scrollytelling-container">
@@ -31,15 +37,20 @@
                     <div class="input-container">
                         <div class="input-panel">
                             <div class="input-title">
-                                <h2>Patient Profile</h2>
-                                <p>Adjust parameters to see predictions</p>
+                                <h2>Personal risk portrait</h2>
+                                <p>Adjust to your parameters to see predictions</p>
                             </div>
 
                             <div class="input-section highlight-section" id="demographics-section">
                                 <div class="input-group">
                                     <label for="age">Age</label>
-                                    <input type="range" id="age" min="0" max="100" value="50">
-                                    <span class="slider-value" id="age-value">50</span> years
+                                    <div class="slider-container">
+                                        <div class="distribution-curve-container" id="age-distribution"></div>
+                                        <input type="range" id="age" min="0" max="100" value="50">
+                                        <div class="value-display">
+                                            <span class="slider-value" id="age-value">50</span> years
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="input-group">
                                     <label for="sex">Sex</label>
@@ -62,19 +73,40 @@
                                         <label for="filter-weight">Filter by weight</label>
                                     </div>
                                 </div>
-                                <div class="input-group">
-                                    <label for="height">Height (cm)</label>
-                                    <input type="range" id="height" min="100" max="220" value="170">
-                                    <span class="slider-value" id="height-value">170</span> cm
-                                </div>
-                                <div class="input-group">
-                                    <label for="weight">Weight (kg)</label>
-                                    <input type="range" id="weight" min="30" max="150" value="70">
-                                    <span class="slider-value" id="weight-value">70</span> kg
-                                </div>
-                                <div class="input-group">
-                                    <label>BMI</label>
-                                    <span id="bmi-value">24.2</span> kg/m<sup>2</sup>
+                                
+                                <div class="measurements-container">
+                                    <div class="measurement-row">
+                                        <div class="measurement-input input-group">
+                                            <label for="height">Height (cm)</label>
+                                            <div class="slider-container">
+                                                <div class="distribution-curve-container" id="height-distribution"></div>
+                                                <input type="range" id="height" min="100" max="220" value="170">
+                                                <div class="value-display">
+                                                    <span class="slider-value" id="height-value">170</span> cm
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="measurement-row">
+                                        <div class="measurement-input input-group">
+                                            <label for="weight">Weight (kg)</label>
+                                            <div class="slider-container">
+                                                <div class="distribution-curve-container" id="weight-distribution"></div>
+                                                <input type="range" id="weight" min="0" max="200" value="70">
+                                                <div class="value-display">
+                                                    <span class="slider-value" id="weight-value">70</span> kg
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="bmi-display">
+                                        <div class="bmi-label">BMI</div>
+                                        <div class="bmi-value-container">
+                                            <span id="bmi-value" class="bmi-value">24.2</span> kg/m<sup>2</sup>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -92,56 +124,56 @@
                     <div class="input-container">
                         <div class="filter-panel">
                             <div class="input-title">
-                                <h2>Surgical Dimensions Explorer</h2>
-                                <p>Choose any dimensions to explore</p>
+                                <h2>Multidimensional surgical explorer</h2>
+                                <p>Choose any pair of axes to find relationships</p>
                             </div>
 
                             <div class="filter-section highlight-section" id="dimensions-section">
                                 <div class="filter-group">
-                                    <label for="x-axis">X-Axis Dimension</label>
+                                    <label for="x-axis">X-axis dimension</label>
                                     <select id="x-axis">
                                         <option value="bmi">BMI</option>
-                                        <option value="ebl">Blood Loss</option>
-                                        <option value="icu">ICU Days</option>
-                                        <option value="duration" selected>Surgery Duration</option>
+                                        <option value="ebl">Blood loss</option>
+                                        <option value="icu">ICU days</option>
+                                        <option value="duration" selected>Surgery duration</option>
                                     </select>
                                 </div>
                                 <div class="filter-group">
-                                    <label for="y-axis">Y-Axis Dimension</label>
+                                    <label for="y-axis">Y-axis dimension</label>
                                     <select id="y-axis">
                                         <option value="bmi" selected>BMI</option>
-                                        <option value="ebl">Blood Loss</option>
-                                        <option value="icu">ICU Days</option>
-                                        <option value="duration">Surgery Duration</option>
+                                        <option value="ebl">Blood loss</option>
+                                        <option value="icu">ICU days</option>
+                                        <option value="duration">Surgery duration</option>
                                     </select>
                                 </div>
                                 <div class="filter-group">
-                                    <label for="color-by">Color By</label>
+                                    <label for="color-by">Color by</label>
                                     <select id="color-by">
                                         <option value="none">None</option>
                                         <option value="age">Age</option>
-                                        <option value="asa" selected>ASA Score</option>
-                                        <option value="ebl">Blood Loss</option>
+                                        <option value="asa" selected>ASA score</option>
+                                        <option value="ebl">Blood loss</option>
                                         <option value="bmi">BMI</option>
                                         <option value="department">Department</option>
-                                        <option value="approach">Surgical Approach</option>
+                                        <option value="approach">Surgical approach</option>
                                     </select>
                                 </div>
                                 <div class="filter-group">
-                                    <label for="size-by">Size By</label>
+                                    <label for="size-by">Size by</label>
                                     <select id="size-by">
                                         <option value="none">None</option>
                                         <option value="age">Age</option>
-                                        <option value="ebl">Blood Loss</option>
-                                        <option value="icu" selected>ICU Days</option>
-                                        <option value="duration">Surgery Duration</option>
+                                        <option value="ebl">Blood loss</option>
+                                        <option value="icu" selected>ICU days</option>
+                                        <option value="duration">Surgery duration</option>
                                     </select>
                                 </div>
                             </div>
 
                             <div class="filter-section highlight-section" id="age-filter-section">
                                 <div class="filter-group">
-                                    <label>Age Range Filter</label>
+                                    <label>Age range filter</label>
                                     <div class="age-range-control">
                                         <div class="age-range-inputs">
                                             <div class="age-input-group">
@@ -177,7 +209,7 @@
                                                 <button class="preset-btn" data-min="5" data-max="11">Child</button>
                                                 <button class="preset-btn" data-min="12" data-max="17">Teen</button>
                                                 <button class="preset-btn" data-min="18" data-max="44">Young
-                                                    Adult</button>
+                                                    adult</button>
                                                 <button class="preset-btn" data-min="45"
                                                     data-max="64">Middle-aged</button>
                                                 <button class="preset-btn" data-min="65" data-max="100">Senior</button>
@@ -192,7 +224,7 @@
                     <div class="viz-container">
                         <div class="chart-panel">
                             <div class="stats-summary">
-                                <div class="stats-title">Current Selection</div>
+                                <div class="stats-title">Current selection</div>
                                 <div class="stats-grid">
                                     <div class="stat-item">
                                         <span class="stat-value" id="selected-count">0</span>
@@ -200,15 +232,15 @@
                                     </div>
                                     <div class="stat-item">
                                         <span class="stat-value" id="selected-age">0</span>
-                                        <span class="stat-label">Avg. Age</span>
+                                        <span class="stat-label">Avg. age</span>
                                     </div>
                                     <div class="stat-item">
                                         <span class="stat-value" id="selected-duration">0m</span>
-                                        <span class="stat-label">Avg. Duration</span>
+                                        <span class="stat-label">Avg. duration</span>
                                     </div>
                                     <div class="stat-item">
                                         <span class="stat-value" id="selected-mortality">0%</span>
-                                        <span class="stat-label">Mortality Rate</span>
+                                        <span class="stat-label">Mortality rate</span>
                                     </div>
                                 </div>
                             </div>
@@ -227,13 +259,13 @@
                     <div class="input-container">
                         <div class="filter-panel">
                             <div class="input-title">
-                                <h2>Surgery Explorer</h2>
-                                <p>Explore specific surgery types in detail</p>
+                                <h2>Detailed surgery explorer</h2>
+                                <p>Analyze statistics for individual surgical procedures</p>
                             </div>
 
                             <div class="filter-section highlight-section" id="surgery-selection-section">
                                 <div class="filter-group">
-                                    <label for="surgery-combobox">Search & Select Surgery</label>
+                                    <label for="surgery-combobox">Search/select surgery</label>
                                     <div class="custom-combobox" id="surgery-combobox-container">
                                         <div class="combobox-display" id="surgery-combobox-display">
                                             <span class="combobox-value">Select a surgery...</span>
@@ -428,7 +460,9 @@
 
     <footer>
         <div class="container">
-            <p>VitalDB Surgical Outcomes Explorer - Final Project for DSC 106</p>
+            <p class="footer-description">&ldquo;Who survives the operating room?&rdquo;: An interactive visualization of surgical outcomes based on the VitalDB dataset</p>
+            <p class="footer-team">Created by Claire Wang, Fong Vo, Jason Tran, and Emily Yip</p>
+            <p class="footer-links"><a href="https://github.com/ClemHubble/jecc-surgeries" target="_blank">GitHub Repository</a> | <a href="https://vitaldb.net/" target="_blank">VitalDB Dataset</a></p>
         </div>
     </footer>
 

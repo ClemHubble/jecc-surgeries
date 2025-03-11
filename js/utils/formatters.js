@@ -60,13 +60,13 @@ const Formatters = {
   getDimensionLabel(dimension) {
     const labels = {
       age: "Age (years)",
-      icu: "ICU Days",
-      ebl: "Blood Loss (mL)",
-      duration: "Surgery Duration (min)",
-      asa: "ASA Score",
-      bmi: "Body Mass Index",
+      icu: "ICU days",
+      ebl: "Blood loss (mL)",
+      duration: "Surgery duration (min)",
+      asa: "ASA score",
+      bmi: "Body mass index",
       department: "Department",
-      approach: "Surgical Approach",
+      approach: "Surgical approach",
     };
 
     return labels[dimension] || dimension;

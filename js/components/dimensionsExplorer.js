@@ -6,13 +6,29 @@ class DimensionsExplorer {
       return;
     }
 
-    if (!document.querySelector(".tooltip")) {
-      d3.select("body")
-        .append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0)
-        .style("position", "fixed");
+    this.tooltipId = "dimensions-explorer-tooltip";
+    
+    const existingTooltip = document.getElementById(this.tooltipId);
+    if (existingTooltip) {
+      existingTooltip.remove();
     }
+    
+    this.tooltip = d3.select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .attr("id", this.tooltipId)
+      .style("opacity", 0)
+      .style("position", "fixed")
+      .style("background", "rgba(255, 255, 255, 0.95)")
+      .style("border-radius", "6px")
+      .style("box-shadow", "0 4px 12px rgba(0, 0, 0, 0.15)")
+      .style("padding", "12px")
+      .style("font-size", "14px")
+      .style("line-height", "1.4")
+      .style("pointer-events", "none")
+      .style("max-width", "280px")
+      .style("z-index", "1000")
+      .style("border", "1px solid rgba(0, 0, 0, 0.1)");
 
     this.elements = {
       xAxis: document.getElementById("x-axis"),
@@ -60,13 +76,14 @@ class DimensionsExplorer {
     this.resizeObserver = new ResizeObserver(() => {
       this.resizeChart();
       this.updateChart();
+      this.hideAllTooltips();
     });
     this.resizeObserver.observe(this.chartContainer);
   }
 
   initializeChart() {
     this.chart.width = this.chartContainer.clientWidth;
-    this.chart.height = this.chartContainer.clientHeight || 500;
+    this.chart.height = 500;
 
     this.chart.svg = d3
       .select(this.chartContainer)
@@ -107,6 +124,7 @@ class DimensionsExplorer {
     this.chart.svg
       .append("text")
       .attr("class", "x-label")
+      .attr("fill", "var(--muted-foreground)")
       .attr("text-anchor", "middle")
       .attr(
         "x",
@@ -125,6 +143,7 @@ class DimensionsExplorer {
     this.chart.svg
       .append("text")
       .attr("class", "y-label")
+      .attr("fill", "var(--muted-foreground)")
       .attr("text-anchor", "middle")
       .attr("transform", "rotate(-90)")
       .attr(
@@ -305,12 +324,12 @@ class DimensionsExplorer {
 
   resizeChart() {
     this.chart.width = this.chartContainer.clientWidth;
-    this.chart.height = this.chartContainer.clientHeight || 500;
+    this.chart.height = 500;
 
     d3.select(this.chartContainer)
       .select("svg")
       .attr("width", this.chart.width)
-      .attr("height", this.chart.height);
+      .attr("height", 500);
 
     this.chart.svg
       .select("rect")
@@ -334,6 +353,7 @@ class DimensionsExplorer {
 
     this.chart.svg
       .select(".x-label")
+      .attr("fill", "var(--muted-foreground)")
       .attr(
         "x",
         (this.chart.width - this.chart.margin.left - this.chart.margin.right) /
@@ -345,6 +365,18 @@ class DimensionsExplorer {
           this.chart.margin.top -
           this.chart.margin.bottom +
           40
+      );
+      
+    this.chart.svg
+      .select(".y-label")
+      .attr("fill", "var(--muted-foreground)")
+      .attr(
+        "x",
+        -(
+          this.chart.height -
+          this.chart.margin.top -
+          this.chart.margin.bottom
+        ) / 2
       );
 
     this.chart.svg
@@ -537,52 +569,42 @@ class DimensionsExplorer {
   }
 
   showTooltip(event, d, xAxis, yAxis, colorBy, sizeBy) {
-    const tooltip = d3.select("body .tooltip");
+    const tooltip = this.tooltip;
 
     tooltip.transition().duration(200).style("opacity", 0.9);
-
+    
+    const isMortality = d.death_inhosp;
+    const outcomeColor = isMortality ? "#e74c3c" : "#2ecc71";
+    
     let tooltipContent = `
-            <div style="font-weight: 500; margin-bottom: 5px;">${
-              d.opname || "Unknown Surgery"
-            }</div>
-            <div><strong>Age:</strong> ${d.age} years</div>
-            <div><strong>Department:</strong> ${d.department}</div>
-            <div><strong>Approach:</strong> ${d.approach || "Unknown"}</div>
-            <div><strong>ASA Score:</strong> ${d.asa}</div>
-            <div><strong>${Formatters.getDimensionLabel(
-              xAxis
-            )}:</strong> ${Formatters.formatValue(
-      DataProcessor.getDimensionValue(d, xAxis),
-      xAxis
-    )}</div>
-            <div><strong>${Formatters.getDimensionLabel(
-              yAxis
-            )}:</strong> ${Formatters.formatValue(
-      DataProcessor.getDimensionValue(d, yAxis),
-      yAxis
-    )}</div>`;
-
-    if (colorBy !== "none") {
-      tooltipContent += `<div><strong>${Formatters.getDimensionLabel(
-        colorBy
-      )}:</strong> ${Formatters.formatValue(
-        DataProcessor.getDimensionValue(d, colorBy),
-        colorBy
-      )}</div>`;
-    }
-
-    if (sizeBy !== "none") {
-      tooltipContent += `<div><strong>${Formatters.getDimensionLabel(
-        sizeBy
-      )}:</strong> ${Formatters.formatValue(
-        DataProcessor.getDimensionValue(d, sizeBy),
-        sizeBy
-      )}</div>`;
-    }
-
-    tooltipContent += `<div style="margin-top: 5px;"><strong>Outcome:</strong> ${
-      d.death_inhosp ? "Mortality" : "Survived"
-    }</div>`;
+      <div style="margin-bottom: 10px;">
+        <div style="font-weight: 600; font-size: 16px; margin-bottom: 4px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 6px;">
+          ${d.opname || "Unknown Surgery"}
+        </div>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin-bottom: 10px;">
+        <div><span style="font-weight: 500; color: #555;">Age:</span> ${d.age} years</div>
+        <div><span style="font-weight: 500; color: #555;">ASA:</span> ${d.asa}</div>
+        <div><span style="font-weight: 500; color: #555;">Department:</span> ${d.department}</div>
+        <div><span style="font-weight: 500; color: #555;">Approach:</span> ${d.approach || "Unknown"}</div>
+      </div>
+      
+      <div style="border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 8px 0; margin-bottom: 8px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <div><span style="font-weight: 500; color: #555;">Blood Loss:</span> ${Formatters.formatValue(DataProcessor.getDimensionValue(d, "ebl"), "ebl")}</div>
+          <div><span style="font-weight: 500; color: #555;">ICU Days:</span> ${Formatters.formatValue(DataProcessor.getDimensionValue(d, "icu"), "icu")}</div>
+        </div>
+      </div>
+      
+      <div style="margin-bottom: 10px;">
+        <div><span style="font-weight: 500; color: #555;">${Formatters.getDimensionLabel(xAxis)}:</span> ${Formatters.formatValue(DataProcessor.getDimensionValue(d, xAxis), xAxis)}</div>
+        <div><span style="font-weight: 500; color: #555;">${Formatters.getDimensionLabel(yAxis)}:</span> ${Formatters.formatValue(DataProcessor.getDimensionValue(d, yAxis), yAxis)}</div>
+      </div>
+      
+      <div style="font-weight: 600; padding: 4px 8px; border-radius: 4px; display: inline-block; background-color: ${outcomeColor}; color: white;">
+        ${isMortality ? "Mortality" : "Survived"}
+      </div>`;
 
     tooltip.html(tooltipContent);
 
@@ -594,7 +616,7 @@ class DimensionsExplorer {
   }
 
   positionTooltip(event) {
-    const tooltip = d3.select("body .tooltip");
+    const tooltip = this.tooltip;
     const tooltipNode = tooltip.node();
 
     const viewportWidth = window.innerWidth;
@@ -628,7 +650,11 @@ class DimensionsExplorer {
   }
 
   hideTooltip() {
-    d3.select("body .tooltip").transition().duration(500).style("opacity", 0);
+    this.tooltip.transition().duration(500).style("opacity", 0);
+  }
+
+  hideAllTooltips() {
+    this.tooltip.style("opacity", 0);
   }
 
   updateLegend(dimension, data) {
@@ -685,11 +711,11 @@ class DimensionsExplorer {
       } else if (dimension === "asa") {
         const asaValues = [1, 2, 3, 4, 5];
         const asaLabels = [
-          "1 - Normal healthy",
-          "2 - Mild disease",
-          "3 - Severe disease",
-          "4 - Life-threatening",
-          "5 - Moribund",
+          "1 – Normal healthy",
+          "2 – Mild disease",
+          "3 – Severe disease",
+          "4 – Life-threatening",
+          "5 – Moribund",
         ];
 
         asaValues.forEach((value, i) => {

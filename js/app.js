@@ -32,6 +32,10 @@ class App {
     this.scrollManager.onVisualizationChange((activeViz) => {
       console.log(`Active visualization changed to: ${activeViz}`);
 
+      if (this.dimensionsExplorer) {
+        this.dimensionsExplorer.hideAllTooltips();
+      }
+
       const vizSections = document.querySelectorAll(".viz-section");
       vizSections.forEach((section) => {
         if (section.id === activeViz) {

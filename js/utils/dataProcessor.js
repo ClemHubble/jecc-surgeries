@@ -45,9 +45,6 @@ const DataProcessor = {
       { ageRange: 2, bmiRange: 5, heightRange: 5, weightRange: 5 },
       { ageRange: 5, bmiRange: 8, heightRange: 10, weightRange: 10 },
       { ageRange: 8, bmiRange: 10, heightRange: 15, weightRange: 15 },
-      { ageRange: 10, bmiRange: 15, heightRange: 20, weightRange: 20 },
-      { ageRange: 10, bmiRange: 20, heightRange: 25, weightRange: 25 },
-      { ageRange: 10, bmiRange: 25, heightRange: 30, weightRange: 30 },
     ];
 
     const allResults = [];

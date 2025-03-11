@@ -419,22 +419,19 @@ class SurgeryExplorer {
     section.className = "results-section";
 
     const title = document.createElement("h3");
-    title.textContent = "Key Statistics";
+    title.textContent = "Summary statistics";
     title.className = "results-section-title";
     section.appendChild(title);
 
     const stats = this.calculateKeyStats();
 
     const statsGrid = document.createElement("div");
-    statsGrid.style.display = "grid";
-    statsGrid.style.gridTemplateColumns =
-      "repeat(auto-fit, minmax(200px, 1fr))";
-    statsGrid.style.gap = "15px";
+    statsGrid.className = "compact-stats-grid";
     section.appendChild(statsGrid);
 
     const statsItems = [
       {
-        label: "Surgery Duration",
+        label: "Surgery duration",
         value: `${Math.round(stats.avgDuration)} min`,
         icon: "⏱️",
         comparison: `${stats.durationPercent > 0 ? "+" : ""}${
@@ -443,21 +440,21 @@ class SurgeryExplorer {
         isPositive: stats.durationPercent < 0,
       },
       {
-        label: "ICU Stays",
+        label: "ICU stays",
         value: `${stats.avgICU} days`,
         icon: "🏥",
         comparison: `${stats.icuPercent > 0 ? "+" : ""}${stats.icuPercent}%`,
         isPositive: stats.icuPercent < 0,
       },
       {
-        label: "Blood Loss",
+        label: "Blood loss",
         value: `${Math.round(stats.avgEBL)} mL`,
         icon: "🩸",
         comparison: `${stats.eblPercent > 0 ? "+" : ""}${stats.eblPercent}%`,
         isPositive: stats.eblPercent < 0,
       },
       {
-        label: "Mortality Rate",
+        label: "Mortality rate",
         value: `${stats.mortalityRate}%`,
         icon: "⚠️",
         comparison: `${stats.mortalityPercent > 0 ? "+" : ""}${
@@ -469,41 +466,41 @@ class SurgeryExplorer {
 
     statsItems.forEach((stat) => {
       const statCard = document.createElement("div");
-      statCard.style.backgroundColor = "var(--background)";
-      statCard.style.padding = "12px";
-      statCard.style.borderRadius = "var(--radius)";
-      statCard.style.border = "1px solid var(--border)";
-      statCard.style.textAlign = "center";
+      statCard.className = "compact-stat-card";
       statsGrid.appendChild(statCard);
 
-      const icon = document.createElement("div");
+      const contentWrapper = document.createElement("div");
+      contentWrapper.className = "stat-content";
+      statCard.appendChild(contentWrapper);
+
+      const iconAndLabel = document.createElement("div");
+      iconAndLabel.className = "stat-header";
+      contentWrapper.appendChild(iconAndLabel);
+
+      const icon = document.createElement("span");
       icon.textContent = stat.icon;
-      icon.style.fontSize = "24px";
-      icon.style.marginBottom = "8px";
-      statCard.appendChild(icon);
+      icon.className = "stat-icon";
+      iconAndLabel.appendChild(icon);
+
+      const label = document.createElement("span");
+      label.textContent = stat.label;
+      label.className = "stat-label";
+      iconAndLabel.appendChild(label);
+
+      const valueWrapper = document.createElement("div");
+      valueWrapper.className = "stat-value-wrapper";
+      contentWrapper.appendChild(valueWrapper);
 
       const value = document.createElement("div");
       value.textContent = stat.value;
-      value.style.fontSize = "1.2rem";
-      value.style.fontWeight = "500";
-      value.style.color = "var(--primary)";
-      value.style.fontFamily = "var(--font-mono)";
-      value.style.marginBottom = "5px";
-      statCard.appendChild(value);
+      value.className = "stat-value";
+      valueWrapper.appendChild(value);
 
       const comparison = document.createElement("div");
       comparison.textContent = stat.comparison;
-      comparison.style.fontSize = "0.8rem";
-      comparison.style.color = stat.isPositive ? "#10b981" : "#ef4444";
-      comparison.style.fontFamily = "var(--font-mono)";
-      comparison.style.marginBottom = "5px";
-      statCard.appendChild(comparison);
-
-      const label = document.createElement("div");
-      label.textContent = stat.label;
-      label.style.fontSize = "0.875rem";
-      label.style.color = "var(--muted-foreground)";
-      statCard.appendChild(label);
+      comparison.className = "stat-comparison";
+      comparison.classList.add(stat.isPositive ? "positive" : "negative");
+      valueWrapper.appendChild(comparison);
     });
 
     this.container.appendChild(section);
@@ -516,7 +513,7 @@ class SurgeryExplorer {
     section.className = "results-section";
 
     const title = document.createElement("h3");
-    title.textContent = "Surgery Overview";
+    title.textContent = "Surgery overview";
     title.className = "results-section-title";
     section.appendChild(title);
 
@@ -562,7 +559,7 @@ class SurgeryExplorer {
     procedureSection.className = "stat-list-item";
 
     const procedureTitle = document.createElement("h4");
-    procedureTitle.textContent = "Procedure Details";
+    procedureTitle.textContent = "Procedure details";
     procedureSection.appendChild(procedureTitle);
 
     const procedureList = document.createElement("ul");
@@ -600,7 +597,7 @@ class SurgeryExplorer {
     resourceSection.className = "stat-list-item";
 
     const resourceTitle = document.createElement("h4");
-    resourceTitle.textContent = "Resource Utilization";
+    resourceTitle.textContent = "Resource utilization";
     resourceSection.appendChild(resourceTitle);
 
     const resourceList = document.createElement("ul");
@@ -1000,8 +997,8 @@ class SurgeryExplorer {
       "repeat(auto-fit, minmax(300px, 1fr))";
     chartsContainer.style.gap = "20px";
 
-    const ageChartWrapper = this.createChartWrapper("Age Distribution");
-    const losChartWrapper = this.createChartWrapper("Hospital Length of Stay");
+    const ageChartWrapper = this.createChartWrapper("Age distribution");
+    const losChartWrapper = this.createChartWrapper("Hospital length of stay");
 
     chartsContainer.appendChild(ageChartWrapper);
     chartsContainer.appendChild(losChartWrapper);
@@ -1152,7 +1149,7 @@ class SurgeryExplorer {
         .attr("y", chartHeight + 30)
         .attr("fill", "var(--muted-foreground)")
         .style("font-size", "12px")
-        .text("Patient Age (years)");
+        .text("Patient age (years)");
 
       svg.append("g").attr("class", "y-axis").call(d3.axisLeft(y).ticks(5));
 
@@ -1165,7 +1162,7 @@ class SurgeryExplorer {
         .attr("y", -30)
         .attr("fill", "var(--muted-foreground)")
         .style("font-size", "12px")
-        .text("Number of Patients");
+        .text("Number of patients");
 
       if (meanAge) {
         svg
@@ -1334,7 +1331,7 @@ class SurgeryExplorer {
         .attr("y", -30)
         .attr("fill", "var(--muted-foreground)")
         .style("font-size", "12px")
-        .text("Number of Patients");
+        .text("Number of patients");
 
       if (meanLOS) {
         svg
