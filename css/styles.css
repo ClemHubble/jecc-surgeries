@@ -83,7 +83,7 @@ h1 {
 }
 
 h2 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
 }
 
 h3 {
@@ -96,7 +96,7 @@ h4 {
 
 p {
     font-size: 1rem;
-    line-height: 1.7;
+    line-height: 1.6;
     margin-bottom: var(--space-4);
 }
 
@@ -297,6 +297,10 @@ footer p {
     margin-bottom: var(--space-4);
     color: var(--muted-foreground);
     font-size: 0.95rem;
+}
+
+.text-section p:last-child {
+    margin-bottom: 0;
 }
 
 .transition-marker {
@@ -784,7 +788,8 @@ input[type="range"]:focus {
 .legend-items {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-3);
+    column-gap: var(--space-3);
+    row-gap: var(--space-2);
     padding-left: var(--space-2);
 }
 
@@ -793,7 +798,6 @@ input[type="range"]:focus {
     align-items: center;
     gap: var(--space-2);
     margin-right: var(--space-3);
-    margin-bottom: var(--space-1);
 }
 
 .legend-color {
@@ -930,7 +934,6 @@ input[type="range"]:focus {
 }
 
 .stat-value {
-    font-weight: 500;
     font-size: 1.125rem;
     font-family: var(--font-mono);
 }
@@ -956,9 +959,7 @@ input[type="range"]:focus {
 .no-data-msg {
     padding: var(--space-6);
     text-align: center;
-    border-radius: var(--radius);
     background-color: var(--background);
-    border: 1px solid var(--border);
 }
 
 .warning-message {
@@ -1659,7 +1660,6 @@ input[type="range"]:active::-ms-thumb {
 
 .stat-label {
   font-size: 0.875rem;
-  font-weight: 500;
   color: var(--muted-foreground);
   white-space: nowrap;
   overflow: hidden;
