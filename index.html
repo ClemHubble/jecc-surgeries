@@ -20,13 +20,21 @@
     <header>
         <div class="container">
             <h1>Who survives the operating room?</h1>
-            <div class="citation">Lee HC, Park Y, Yoon SB, Yang SM, Park D, Jung CW. VitalDB, a high-fidelity multi-parameter vital signs database in surgical patients. Sci Data. 2022 Jun 8;9(1):279. <a href="https://doi.org/10.1038/s41597-022-01411-5">doi: 10.1038/s41597-022-01411-5</a>. PMID: 35676300; PMCID: PMC9178032.</div>
+            <div class="citation">Lee HC, Park Y, Yoon SB, Yang SM, Park D, Jung CW. VitalDB, a high-fidelity
+                multi-parameter vital signs database in surgical patients. Sci Data. 2022 Jun 8;9(1):279. <a
+                    href="https://doi.org/10.1038/s41597-022-01411-5">doi: 10.1038/s41597-022-01411-5</a>. PMID:
+                35676300; PMCID: PMC9178032.</div>
         </div>
     </header>
 
     <div class="hook-section">
         <div class="container">
-            <p>Every surgical procedure carries risk. But how do factors like age, BMI, surgical approach, and duration affect patient outcomes? Explore this interactive visualization of 6,388 surgeries from the VitalDB dataset to understand patterns of survival and mortality in the operating room. Discover how your personal risk factors might influence surgical outcomes, and gain insights that could inform medical decisions for you or your loved ones.</p>
+            <p>As a patient facing surgery, you likely wonder how your experience will compare - not just to the general
+                population, but to others who share your age, body type, and other characteristics. Through an analysis
+                of 6,388 surgeries from the VitalDB dataset, we offer three unique visualization journeys to help answer
+                your surgical questions: explore outcomes for patients similar to you, understand how different surgical
+                approaches affect results, and discover patterns in resource utilization and recovery. Let this
+                interactive tool guide you in making more informed decisions about your surgical care.</p>
         </div>
     </div>
 
@@ -73,13 +81,14 @@
                                         <label for="filter-weight">Filter by weight</label>
                                     </div>
                                 </div>
-                                
+
                                 <div class="measurements-container">
                                     <div class="measurement-row">
                                         <div class="measurement-input input-group">
                                             <label for="height">Height (cm)</label>
                                             <div class="slider-container">
-                                                <div class="distribution-curve-container" id="height-distribution"></div>
+                                                <div class="distribution-curve-container" id="height-distribution">
+                                                </div>
                                                 <input type="range" id="height" min="100" max="220" value="170">
                                                 <div class="value-display">
                                                     <span class="slider-value" id="height-value">170</span> cm
@@ -87,12 +96,13 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="measurement-row">
                                         <div class="measurement-input input-group">
                                             <label for="weight">Weight (kg)</label>
                                             <div class="slider-container">
-                                                <div class="distribution-curve-container" id="weight-distribution"></div>
+                                                <div class="distribution-curve-container" id="weight-distribution">
+                                                </div>
                                                 <input type="range" id="weight" min="0" max="200" value="70">
                                                 <div class="value-display">
                                                     <span class="slider-value" id="weight-value">70</span> kg
@@ -100,7 +110,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="bmi-display">
                                         <div class="bmi-label">BMI</div>
                                         <div class="bmi-value-container">
@@ -300,12 +310,13 @@
             <div class="text-container">
                 <section class="text-section" data-viz="viz-profile" data-highlight="demographics-section">
                     <h2>Who Needs Surgery?</h2>
-                    <p>The risk of needing surgery varies significantly with age. In early childhood, surgeries are rare 
-                        and include tonsillectomies and appendectomies. In middle age, gallbladder removal and joint repairs
+                    <p>The risk of needing surgery varies significantly with age. In early childhood, surgeries are rare
+                        and include tonsillectomies and appendectomies. In middle age, gallbladder removal and joint
+                        repairs
                         become prevalent. Elderly patients often need cardiac or cancer-related surgeries.</p>
                     <p>Sex also plays a role in surgical needs. Women may require gynecological procedures, while men
                         face higher rates of certain cardiovascular surgeries.</p>
-                    <p>We hope this tool will help the user explore what surgeries people get throughout their lifetime. 
+                    <p>We hope this tool will help the user explore what surgeries people get throughout their lifetime.
                     </p>
                 </section>
 
@@ -346,7 +357,7 @@
                         loss relates to surgery duration, or how BMI affects hospital stays across different
                         departments.</p>
                     <p>There is also the option to add a quantitative and categorical variable into the visualization
-                        by changing the size and color of the circles, respectively. 
+                        by changing the size and color of the circles, respectively.
                     </p>
                 </section>
 
@@ -437,9 +448,11 @@
 
     <footer>
         <div class="container">
-            <p class="footer-description">&ldquo;Who survives the operating room?&rdquo;: An interactive visualization of surgical outcomes based on the VitalDB dataset</p>
+            <p class="footer-description">&ldquo;Who survives the operating room?&rdquo;: An interactive visualization
+                of surgical outcomes based on the VitalDB dataset</p>
             <p class="footer-team">Created by Claire Wang, Fong Vo, Jason Tran, and Emily Yip</p>
-            <p class="footer-links"><a href="https://github.com/ClemHubble/jecc-surgeries" target="_blank">GitHub Repository</a> | <a href="https://vitaldb.net/" target="_blank">VitalDB Dataset</a></p>
+            <p class="footer-links"><a href="https://github.com/ClemHubble/jecc-surgeries" target="_blank">GitHub
+                    Repository</a> | <a href="https://vitaldb.net/" target="_blank">VitalDB Dataset</a></p>
         </div>
     </footer>
 
