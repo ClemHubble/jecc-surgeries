@@ -50,6 +50,26 @@ class DimensionsExplorer {
       },
     };
 
+    this.surgeryControls = {
+      surgerySearch: document.getElementById("dimensions-surgery-search"),
+      surgerySelect: document.getElementById("dimensions-surgery-select"),
+      comboboxDisplay: document.getElementById("dimensions-surgery-combobox-display"),
+      comboboxValue: document.querySelector("#dimensions-surgery-combobox-display .combobox-value"),
+      comboboxDropdown: document.getElementById("dimensions-surgery-combobox-dropdown"),
+      comboboxSearch: document.getElementById("dimensions-surgery-combobox-search"),
+      comboboxOptions: document.getElementById("dimensions-surgery-combobox-options"),
+      comboboxContainer: document.getElementById("dimensions-surgery-combobox-container"),
+    };
+
+    this.surgeryComboboxState = {
+      isOpen: false,
+      selectedIndex: -1,
+      options: [],
+      filteredOptions: [],
+    };
+    
+    this.selectedSurgery = null;
+
     this.chart = {
       svg: null,
       width: 0,
@@ -70,6 +90,7 @@ class DimensionsExplorer {
     this.setupEventListeners();
 
     dataService.onDataLoaded(() => {
+      this.populateSurgeryOptions();
       this.updateChart();
     });
 
@@ -175,6 +196,226 @@ class DimensionsExplorer {
       .append("g")
       .attr("class", "points-group")
       .attr("clip-path", "url(#chart-area)");
+  }
+
+  populateSurgeryOptions() {
+    if (!dataService.isLoaded || !this.surgeryControls.surgerySelect) return;
+
+    try {
+      const surgeryCounts = d3.rollup(
+        dataService.data.filter((d) => d.opname && d.opname.trim() !== ""),
+        (v) => v.length,
+        (d) => d.opname
+      );
+
+      const surgeries = Array.from(surgeryCounts, ([name, count]) => ({
+        name,
+        count,
+      })).sort((a, b) => b.count - a.count);
+
+      this.surgeryComboboxState.options = surgeries;
+      this.surgeryComboboxState.filteredOptions = surgeries;
+
+      this.surgeryControls.surgerySelect.innerHTML = "";
+
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.textContent = "All surgeries";
+      this.surgeryControls.surgerySelect.appendChild(defaultOption);
+
+      surgeries.forEach((surgery) => {
+        const option = document.createElement("option");
+        option.value = surgery.name;
+        option.textContent = `${surgery.name} (${surgery.count} cases)`;
+        this.surgeryControls.surgerySelect.appendChild(option);
+      });
+
+      this.populateComboboxDropdown();
+    } catch (error) {
+      console.error("Error populating surgery options:", error);
+    }
+  }
+
+  populateComboboxDropdown(filterText = "") {
+    if (!this.surgeryControls.comboboxOptions) return;
+
+    this.surgeryControls.comboboxOptions.innerHTML = "";
+
+    const searchText = filterText.toLowerCase().trim();
+    this.surgeryComboboxState.filteredOptions = this.surgeryComboboxState.options.filter(
+      (surgery) => surgery.name.toLowerCase().includes(searchText)
+    );
+
+    if (this.surgeryComboboxState.filteredOptions.length === 0) {
+      const noResults = document.createElement("div");
+      noResults.className = "combobox-no-results";
+      noResults.textContent = "No surgeries found";
+      this.surgeryControls.comboboxOptions.appendChild(noResults);
+      return;
+    }
+
+    this.surgeryComboboxState.filteredOptions.forEach((surgery, index) => {
+      const option = document.createElement("div");
+      option.className = "combobox-option";
+      option.dataset.value = surgery.name;
+      option.dataset.index = index;
+      option.textContent = `${surgery.name} (${surgery.count} cases)`;
+
+      if (surgery.name === this.selectedSurgery) {
+        option.classList.add("selected");
+        this.surgeryComboboxState.selectedIndex = index;
+      }
+
+      option.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.selectComboboxOption(surgery.name, index);
+      });
+
+      this.surgeryControls.comboboxOptions.appendChild(option);
+    });
+
+    if (this.surgeryComboboxState.selectedIndex >= 0) {
+      setTimeout(() => {
+        const selectedOption = this.surgeryControls.comboboxOptions.querySelector(
+          ".combobox-option.selected"
+        );
+        if (selectedOption) {
+          selectedOption.scrollIntoView({ block: "nearest" });
+        }
+      }, 0);
+    }
+  }
+
+  toggleCombobox() {
+    if (this.surgeryComboboxState.isOpen) {
+      this.closeCombobox();
+    } else {
+      this.openCombobox();
+    }
+  }
+
+  openCombobox() {
+    if (!this.surgeryControls.comboboxDropdown) return;
+
+    this.surgeryComboboxState.isOpen = true;
+
+    this.surgeryControls.comboboxDropdown.classList.add("show");
+
+    if (this.surgeryControls.comboboxSearch) {
+      this.surgeryControls.comboboxSearch.value = "";
+
+      this.populateComboboxDropdown("");
+
+      setTimeout(() => {
+        this.surgeryControls.comboboxSearch.focus();
+      }, 10);
+    }
+  }
+
+  closeCombobox() {
+    if (!this.surgeryControls.comboboxDropdown) return;
+
+    this.surgeryComboboxState.isOpen = false;
+
+    this.surgeryControls.comboboxDropdown.classList.remove("show");
+  }
+
+  handleSurgerySelection() {
+    const select = this.surgeryControls.surgerySelect;
+    this.selectedSurgery = select ? select.value : null;
+
+    if (this.selectedSurgery && this.surgeryControls.comboboxValue) {
+      this.surgeryControls.comboboxValue.textContent = this.selectedSurgery;
+      this.surgeryControls.comboboxValue.classList.remove("placeholder");
+    } else {
+      this.surgeryControls.comboboxValue.textContent = "All surgeries";
+      this.surgeryControls.comboboxValue.classList.add("placeholder");
+    }
+
+    this.updateChart();
+  }
+
+  handleComboboxInput(value) {
+    if (this.surgeryControls.surgerySearch) {
+      this.surgeryControls.surgerySearch.value = value;
+    }
+
+    this.populateComboboxDropdown(value);
+  }
+
+  handleComboboxKeydown(e) {
+    const { filteredOptions, selectedIndex } = this.surgeryComboboxState;
+
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        if (selectedIndex < filteredOptions.length - 1) {
+          this.highlightComboboxOption(selectedIndex + 1);
+        }
+        break;
+
+      case "ArrowUp":
+        e.preventDefault();
+        if (selectedIndex > 0) {
+          this.highlightComboboxOption(selectedIndex - 1);
+        }
+        break;
+
+      case "Enter":
+        e.preventDefault();
+        if (selectedIndex >= 0) {
+          const option = this.surgeryComboboxState.filteredOptions[selectedIndex];
+          if (option) {
+            this.selectComboboxOption(option.name, selectedIndex);
+          }
+        }
+        break;
+
+      case "Escape":
+        e.preventDefault();
+        this.closeCombobox();
+        break;
+
+      case "Tab":
+        this.closeCombobox();
+        break;
+    }
+  }
+
+  highlightComboboxOption(index) {
+    if (!this.surgeryControls.comboboxOptions) return;
+
+    const options = this.surgeryControls.comboboxOptions.querySelectorAll(".combobox-option");
+    options.forEach((option) => option.classList.remove("highlighted"));
+
+    if (index >= 0 && index < options.length) {
+      options[index].classList.add("highlighted");
+      this.surgeryComboboxState.selectedIndex = index;
+      options[index].scrollIntoView({ block: "nearest" });
+    }
+  }
+
+  selectComboboxOption(value, index) {
+    if (this.surgeryControls.comboboxValue) {
+      if (value) {
+        this.surgeryControls.comboboxValue.textContent = value;
+        this.surgeryControls.comboboxValue.classList.remove("placeholder");
+      } else {
+        this.surgeryControls.comboboxValue.textContent = "All surgeries";
+        this.surgeryControls.comboboxValue.classList.add("placeholder");
+      }
+    }
+
+    if (this.surgeryControls.surgerySelect) {
+      this.surgeryControls.surgerySelect.value = value || "";
+    }
+
+    this.closeCombobox();
+
+    this.selectedSurgery = value || null;
+    this.updateChart();
+
+    this.surgeryComboboxState.selectedIndex = index;
   }
 
   setupEventListeners() {
@@ -283,6 +524,41 @@ class DimensionsExplorer {
         });
       });
     }
+
+    if (this.surgeryControls.surgerySelect) {
+      this.surgeryControls.surgerySelect.addEventListener(
+        "change",
+        this.handleSurgerySelection.bind(this)
+      );
+    }
+
+    if (this.surgeryControls.comboboxDisplay) {
+      this.surgeryControls.comboboxDisplay.addEventListener(
+        "click",
+        this.toggleCombobox.bind(this)
+      );
+    }
+
+    if (this.surgeryControls.comboboxSearch) {
+      this.surgeryControls.comboboxSearch.addEventListener("input", (e) => {
+        this.handleComboboxInput(e.target.value);
+      });
+
+      this.surgeryControls.comboboxSearch.addEventListener(
+        "keydown",
+        this.handleComboboxKeydown.bind(this)
+      );
+    }
+
+    document.addEventListener("click", (e) => {
+      if (
+        this.surgeryControls.comboboxContainer &&
+        !this.surgeryControls.comboboxContainer.contains(e.target) &&
+        this.surgeryComboboxState.isOpen
+      ) {
+        this.closeCombobox();
+      }
+    });
   }
 
   clearActivePreset() {
@@ -319,6 +595,7 @@ class DimensionsExplorer {
     return {
       ageMin: parseInt(this.elements.ageMin.value),
       ageMax: parseInt(this.elements.ageMax.value),
+      selectedSurgery: this.selectedSurgery,
     };
   }
 
@@ -571,6 +848,7 @@ class DimensionsExplorer {
   showTooltip(event, d, xAxis, yAxis, colorBy, sizeBy) {
     const tooltip = this.tooltip;
 
+    tooltip.style("display", "block");
     tooltip.transition().duration(200).style("opacity", 0.9);
     
     const isMortality = d.death_inhosp;
@@ -650,11 +928,19 @@ class DimensionsExplorer {
   }
 
   hideTooltip() {
-    this.tooltip.transition().duration(500).style("opacity", 0);
+    this.tooltip
+      .transition()
+      .duration(500)
+      .style("opacity", 0)
+      .on("end", () => {
+        this.tooltip.style("display", "none");
+      });
   }
 
   hideAllTooltips() {
-    this.tooltip.style("opacity", 0);
+    this.tooltip
+      .style("opacity", 0)
+      .style("display", "none");
   }
 
   updateLegend(dimension, data) {

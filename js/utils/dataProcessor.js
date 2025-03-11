@@ -114,7 +114,11 @@ const DataProcessor = {
       }
 
       const ageMatch = d.age >= filters.ageMin && d.age <= filters.ageMax;
-
+      
+      if (filters.selectedSurgery) {
+        return ageMatch && d.opname === filters.selectedSurgery;
+      }
+      
       return ageMatch;
     });
   },

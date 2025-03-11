@@ -279,6 +279,7 @@ footer p {
     margin-bottom: var(--space-4);
     opacity: 0.8;
     transition: opacity 0.3s ease;
+    min-height: 75vh;
 }
 
 .text-section.active {
@@ -1737,13 +1738,16 @@ input[type="range"]:disabled::-ms-thumb {
 
 figure.cartoons {
   width: 100%;
-  height: auto;
-  display:block;
+  margin: 1.5rem 0;
+  display: flex;
+  justify-content: center;
 }
 
-figure.cartoons img{
+figure.cartoons img {
   width: 80%;
+  max-width: 600px;
+  max-height: 500px;
+  display: block;
   margin: 0 auto;
-  height: auto;
-  display:block;
+  object-fit: contain;
 }

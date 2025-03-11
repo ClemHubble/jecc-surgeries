@@ -134,7 +134,7 @@
                     <div class="input-container">
                         <div class="filter-panel">
                             <div class="input-title">
-                                <h2>Multidimensional surgical explorer</h2>
+                                <h2>Dimensions explorer</h2>
                                 <p>Choose any pair of axes to find relationships</p>
                             </div>
 
@@ -181,6 +181,29 @@
                                 </div>
                             </div>
 
+                            <div class="filter-section highlight-section" id="surgery-filter-section">
+                                <div class="filter-group">
+                                    <label for="dimensions-surgery-combobox">Filter by surgery</label>
+                                    <div class="custom-combobox" id="dimensions-surgery-combobox-container">
+                                        <div class="combobox-display" id="dimensions-surgery-combobox-display">
+                                            <span class="combobox-value placeholder">All surgeries</span>
+                                            <div class="combobox-arrow"></div>
+                                        </div>
+                                        <div class="combobox-dropdown" id="dimensions-surgery-combobox-dropdown">
+                                            <div class="combobox-search-container">
+                                                <input type="text" id="dimensions-surgery-combobox-search" class="combobox-search"
+                                                    placeholder="Search surgeries...">
+                                            </div>
+                                            <div class="combobox-options" id="dimensions-surgery-combobox-options">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="text" id="dimensions-surgery-search" style="display: none;">
+                                    <select id="dimensions-surgery-select" style="display: none;">
+                                    </select>
+                                </div>
+                            </div>
+
                             <div class="filter-section highlight-section" id="age-filter-section">
                                 <div class="filter-group">
                                     <label>Age range filter</label>
@@ -212,7 +235,7 @@
                                             <span>100</span>
                                         </div>
                                         <div class="age-presets">
-                                            <label>Age Presets</label>
+                                            <label>Age presets</label>
                                             <div class="preset-buttons">
                                                 <button class="preset-btn" data-min="0" data-max="1">Infant</button>
                                                 <button class="preset-btn" data-min="2" data-max="4">Toddler</button>
@@ -308,7 +331,8 @@
             </div>
 
             <div class="text-container">
-                <section class="text-section" data-viz="viz-profile" data-highlight="demographics-section">
+                <section class="text-section" data-viz="viz-profile">
+                <!-- <section class="text-section" data-viz="viz-profile" data-highlight="demographics-section"> -->
                     <h3>Who needs surgery?</h3>
                     <p>The risk of needing surgery varies significantly with age. In early childhood, surgeries are rare
                         and include tonsillectomies and appendectomies. In middle age, gallbladder removal and joint
@@ -323,7 +347,7 @@
                     </figure>
                 </section>
 
-                <section class="text-section" data-viz="viz-profile" data-highlight="physical-section">
+                <!-- <section class="text-section" data-viz="viz-profile" data-highlight="physical-section">
                     <h3>Physical characteristics & surgical outcomes</h3>
                     <p>Body mass index (BMI) is a significant factor in surgical planning and outcomes. Patients with
                         very high or very low BMI present unique challenges during surgery and may experience different
@@ -332,9 +356,9 @@
                         dosages, and anticipate potential complications. Patients with extreme measurements may require
                         special considerations.</p>
                     <p>We aim to show how physiological data impacts the surgeical experience of a patient. </p>
-                </section>
+                </section> -->
 
-                <section class="text-section" data-viz="viz-profile">
+                <!-- <section class="text-section" data-viz="viz-profile">
                     <h3>Making informed decisions</h3>
                     <p>Understanding your personal surgical risk profile can help you make better healthcare decisions.
                         By knowing which surgeries are more common for people with your characteristics, you can be more
@@ -342,13 +366,14 @@
                     <p>The data shows that early detection and intervention often lead to less invasive surgical
                         approaches and better outcomes. Regular health screenings become increasingly important as risk
                         factors accumulate.</p>
-                </section>
+                </section> -->
 
                 <div class="transition-marker">
-                    <div class="transition-label">Multidimensional Surgical Explorer</div>
+                    <div class="transition-label">Dimensions explorer</div>
                 </div>
 
-                <section class="text-section" data-viz="viz-dimensions" data-highlight="dimensions-section">
+                <!-- <section class="text-section" data-viz="viz-dimensions" data-highlight="dimensions-section"> -->
+                <section class="text-section" data-viz="viz-dimensions">
                     <h3>Exploring multiple dimensions</h3>
                     <p>Surgical outcomes are influenced by numerous interconnected factors. Using this multidimensional
                         explorer, you can investigate relationships between different metrics that wouldn't be apparent
@@ -368,7 +393,7 @@
 
                 </section>
 
-                <section class="text-section" data-viz="viz-dimensions" data-highlight="age-filter-section">
+                <!-- <section class="text-section" data-viz="viz-dimensions" data-highlight="age-filter-section">
                     <h3>Age as a filtering dimension</h3>
                     <p>Instead of using age as a fixed axis, this visualization allows you to use it as a "slice
                         selector" - filtering the dataset to focus on specific age ranges.</p>
@@ -379,27 +404,27 @@
                         higher-dimensional dataset, with age as the dimension you're slicing through.</p>
                     <p>Try narrowing the age range to focus on specific groups like pediatric patients (0-18),
                         middle-aged adults (40-60), or elderly patients (70+).</p>
-                </section>
+                </section> -->
 
-                <section class="text-section" data-viz="viz-dimensions">
+                <!-- <section class="text-section" data-viz="viz-dimensions" data-highlight="surgery-filter-section">
                     <h3>Visual encoding of multiple dimensions</h3>
                     <p>This visualization encodes up to four dimensions simultaneously: X-axis, Y-axis, color, and point
                         size. This allows you to explore complex relationships that simple charts can't capture.</p>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce condimentum diam non odio sodales,
-                        quis feugiat odio lacinia. Fusce euismod tellus et porta venenatis.</p>
+                    <p>You can also filter the visualization to focus on a specific surgery type using the surgery 
+                        selection combobox. This helps you understand the unique characteristics and outcomes of 
+                        individual procedures across different dimensions.</p>
                     <p>For example, you might plot BMI against hospital stay, with points colored by department and
-                        sized
-                        by blood loss. This reveals how these four factors interact in determining surgical outcomes.
+                        sized by blood loss. This reveals how these four factors interact in determining surgical outcomes.
                     </p>
                     <p>Pay special attention to clusters of points and outliers - these often represent interesting
                         patterns or exceptional cases worth investigating further.</p>
                     <p>The black outline on some points indicates mortality cases. Notice how these cases distribute
                         across the different dimensions, potentially revealing combinations of factors associated with
                         higher risk.</p>
-                </section>
+                </section> -->
 
                 <div class="transition-marker">
-                    <div class="transition-label">Surgery Explorer</div>
+                    <div class="transition-label">Surgery explorer</div>
                 </div>
 
                 <section class="text-section" data-viz="viz-surgery" data-highlight="surgery-selection-section">
@@ -421,7 +446,7 @@
                     </figure>
                 </section>
 
-                <section class="text-section" data-viz="viz-surgery">
+                <!-- <section class="text-section" data-viz="viz-surgery">
                     <h3>Understanding surgical demographics and approaches</h3>
                     <p>The demographics section of the dashboard reveals who typically undergoes the selected procedure.
                         Age distribution might show whether a procedure is more common in certain age groups. Sex
@@ -435,8 +460,8 @@
                     <p>The anesthesia types chart reveals whether regional techniques like spinal or epidural anesthesia
                         are commonly used for the procedure, or if general anesthesia is the standard approach. This has
                         implications for recovery trajectories and resource utilization.</p>
-                </section>
-
+                </section> -->
+<!-- 
                 <section class="text-section" data-viz="viz-surgery">
                     <h3>Resource utilization and outcomes analysis</h3>
                     <p>The resource utilization section provides detailed information about what's typically required
@@ -451,7 +476,7 @@
                     <p>The summary metrics at the top of the dashboard provide at-a-glance comparisons between the
                         selected procedure and overall surgical averages. This context helps identify procedures that
                         are outliers in terms of duration, blood loss, or mortality risk.</p>
-                </section>
+                </section> -->
             </div>
         </div>
     </div>

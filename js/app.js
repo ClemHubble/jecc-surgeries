@@ -36,6 +36,8 @@ class App {
         this.dimensionsExplorer.hideAllTooltips();
       }
 
+      d3.selectAll('.tooltip').style('opacity', 0).style('display', 'none');
+
       const vizSections = document.querySelectorAll(".viz-section");
       vizSections.forEach((section) => {
         if (section.id === activeViz) {
