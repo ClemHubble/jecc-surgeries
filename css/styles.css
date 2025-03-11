@@ -1734,3 +1734,15 @@ input[type="range"]:disabled::-ms-thumb {
     font-size: 12px;
     font-family: var(--font-sans);
 }
+
+figure.cartoons {
+  width: 100%;
+  height: auto;
+  display:block;
+}
+
+figure.cartoons img{
+  width: 80%;
+  height: auto;
+  display:block;
+}
