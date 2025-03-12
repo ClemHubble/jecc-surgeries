@@ -57,6 +57,8 @@ class PatientProfile {
     this.calculateBMI();
 
     window.addEventListener("resize", this.handleResize);
+    
+    this.setupVisibilityObserver();
 
     dataService.onDataLoaded(() => {
       this.updateSliderToMeans();
@@ -886,7 +888,18 @@ class PatientProfile {
 
     d3.select(container).selectAll("*").remove();
 
-    if (container.clientWidth <= 0) return;
+    if (container.clientWidth <= 0) {
+      requestAnimationFrame(() => {
+        if (container.clientWidth > 0) {
+          this.createDistributionCurve(attribute, data, min, max, isFiltered, heightScale);
+        } else {
+          setTimeout(() => {
+            this.createDistributionCurve(attribute, data, min, max, isFiltered, heightScale);
+          }, 100);
+        }
+      });
+      return;
+    }
     
     container.classList.toggle('filtered-distribution', isFiltered && !data.isEmptyResult);
     
@@ -1035,5 +1048,27 @@ class PatientProfile {
     this.resizeTimeout = setTimeout(() => {
       this.createInteractiveDistributionCurves();
     }, 250);
+  }
+
+  setupVisibilityObserver() {
+    // Set up a MutationObserver to detect when viz-profile becomes active
+    const vizProfile = document.getElementById("viz-profile");
+    if (!vizProfile) return;
+    
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === "class") {
+          const isVisible = vizProfile.classList.contains("active");
+          if (isVisible) {
+            // If the section becomes visible, redraw the distribution curves
+            setTimeout(() => {
+              this.createInteractiveDistributionCurves();
+            }, 50);
+          }
+        }
+      });
+    });
+    
+    observer.observe(vizProfile, { attributes: true });
   }
 }

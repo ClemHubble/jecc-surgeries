@@ -46,6 +46,12 @@ class App {
           section.classList.remove("active");
         }
       });
+      
+      if (activeViz === "viz-profile" && this.patientProfile) {
+        setTimeout(() => {
+          this.patientProfile.createInteractiveDistributionCurves();
+        }, 50);
+      }
     });
   }
 
