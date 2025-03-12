@@ -1424,18 +1424,27 @@ select[type="search"] option:checked {
 
 .combobox-option {
   padding: var(--space-2);
+  padding-left: calc(var(--space-2) + 3px);
   cursor: pointer;
   font-family: inherit;
   font-size: 0.875rem;
+  transition: background-color 0.15s ease, color 0.15s ease, border-left 0.15s ease, padding 0.15s ease;
+  border-left: 3px solid transparent;
 }
 
 .combobox-option:hover, .combobox-option.highlighted {
-  background: var(--primary-alpha);
+  background-color: var(--primary-alpha);
+  border-left: 3px solid var(--primary);
+  padding-left: var(--space-2);
+  font-weight: 500;
 }
 
 .combobox-option.selected {
   background: var(--primary);
   color: white;
+  border-left: 3px solid var(--foreground);
+  padding-left: var(--space-2);
+  font-weight: 500;
 }
 
 .combobox-no-results {

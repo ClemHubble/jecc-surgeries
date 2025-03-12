@@ -43,7 +43,7 @@ class SurgeryExplorer {
       surgerySearch: document.getElementById("surgery-search"),
       surgerySelect: document.getElementById("surgery-select"),
       comboboxDisplay: document.getElementById("surgery-combobox-display"),
-      comboboxValue: document.querySelector(".combobox-value"),
+      comboboxValue: document.querySelector("#surgery-combobox-display .combobox-value"),
       comboboxDropdown: document.getElementById("surgery-combobox-dropdown"),
       comboboxSearch: document.getElementById("surgery-combobox-search"),
       comboboxOptions: document.getElementById("surgery-combobox-options"),
@@ -134,6 +134,14 @@ class SurgeryExplorer {
       option.addEventListener("click", (e) => {
         e.stopPropagation();
         this.selectComboboxOption(surgery.name, index);
+      });
+      
+      option.addEventListener("mouseover", () => {
+        this.highlightComboboxOption(index);
+      });
+      
+      option.addEventListener("mouseout", () => {
+        option.classList.remove("highlighted");
       });
 
       this.controls.comboboxOptions.appendChild(option);
@@ -316,34 +324,42 @@ class SurgeryExplorer {
 
   highlightComboboxOption(index) {
     if (!this.controls.comboboxOptions) return;
-
-    const options =
-      this.controls.comboboxOptions.querySelectorAll(".combobox-option");
-    options.forEach((opt) => opt.classList.remove("highlighted"));
-
-    if (index >= 0 && index < options.length) {
+  
+    const options = this.controls.comboboxOptions.querySelectorAll(".combobox-option");
+    options.forEach(option => {
+      option.classList.remove("highlighted");
+    });
+  
+    if (index < 0) index = 0;
+    if (index >= options.length) index = options.length - 1;
+    
+    if (options[index]) {
       options[index].classList.add("highlighted");
-      this.comboboxState.selectedIndex = index;
-
+      
       options[index].scrollIntoView({ block: "nearest" });
     }
+    
+    this.comboboxState.selectedIndex = index;
   }
 
   selectComboboxOption(value, index) {
     if (this.controls.comboboxValue) {
-      this.controls.comboboxValue.textContent = value;
-      this.controls.comboboxValue.classList.remove("placeholder");
+      if (value) {
+        this.controls.comboboxValue.textContent = value;
+        this.controls.comboboxValue.classList.remove("placeholder");
+      } else {
+        this.controls.comboboxValue.textContent = "Select a surgery...";
+        this.controls.comboboxValue.classList.add("placeholder");
+      }
     }
 
     if (this.controls.surgerySelect) {
-      this.controls.surgerySelect.value = value;
-      this.controls.surgerySelect.dispatchEvent(new Event("change"));
+      this.controls.surgerySelect.value = value || "";
     }
 
-    this.closeCombobox();
-
     this.selectedSurgery = value;
-    this.updateExplorer();
+    this.handleSurgerySelection();
+    this.closeCombobox();
 
     this.comboboxState.selectedIndex = index;
   }

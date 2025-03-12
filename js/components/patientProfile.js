@@ -1051,7 +1051,6 @@ class PatientProfile {
   }
 
   setupVisibilityObserver() {
-    // Set up a MutationObserver to detect when viz-profile becomes active
     const vizProfile = document.getElementById("viz-profile");
     if (!vizProfile) return;
     
@@ -1060,7 +1059,6 @@ class PatientProfile {
         if (mutation.attributeName === "class") {
           const isVisible = vizProfile.classList.contains("active");
           if (isVisible) {
-            // If the section becomes visible, redraw the distribution curves
             setTimeout(() => {
               this.createInteractiveDistributionCurves();
             }, 50);

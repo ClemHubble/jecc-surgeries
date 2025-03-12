@@ -270,6 +270,14 @@ class DimensionsExplorer {
         e.stopPropagation();
         this.selectComboboxOption(surgery.name, index);
       });
+      
+      option.addEventListener("mouseover", () => {
+        this.highlightComboboxOption(index);
+      });
+      
+      option.addEventListener("mouseout", () => {
+        option.classList.remove("highlighted");
+      });
 
       this.surgeryControls.comboboxOptions.appendChild(option);
     });
@@ -322,16 +330,19 @@ class DimensionsExplorer {
 
   handleSurgerySelection() {
     const select = this.surgeryControls.surgerySelect;
-    this.selectedSurgery = select ? select.value : null;
+    
+    if (!this.selectedSurgery && select) {
+      this.selectedSurgery = select.value || null;
+    }
 
     if (this.selectedSurgery && this.surgeryControls.comboboxValue) {
       this.surgeryControls.comboboxValue.textContent = this.selectedSurgery;
       this.surgeryControls.comboboxValue.classList.remove("placeholder");
-    } else {
+    } else if (this.surgeryControls.comboboxValue) {
       this.surgeryControls.comboboxValue.textContent = "All surgeries";
       this.surgeryControls.comboboxValue.classList.add("placeholder");
     }
-
+    
     this.updateChart();
   }
 
@@ -384,15 +395,22 @@ class DimensionsExplorer {
 
   highlightComboboxOption(index) {
     if (!this.surgeryControls.comboboxOptions) return;
-
+  
     const options = this.surgeryControls.comboboxOptions.querySelectorAll(".combobox-option");
-    options.forEach((option) => option.classList.remove("highlighted"));
-
-    if (index >= 0 && index < options.length) {
+    options.forEach(option => {
+      option.classList.remove("highlighted");
+    });
+  
+    if (index < 0) index = 0;
+    if (index >= options.length) index = options.length - 1;
+    
+    if (options[index]) {
       options[index].classList.add("highlighted");
-      this.surgeryComboboxState.selectedIndex = index;
+      
       options[index].scrollIntoView({ block: "nearest" });
     }
+    
+    this.surgeryComboboxState.selectedIndex = index;
   }
 
   selectComboboxOption(value, index) {
@@ -410,10 +428,9 @@ class DimensionsExplorer {
       this.surgeryControls.surgerySelect.value = value || "";
     }
 
+    this.selectedSurgery = value;
+    this.handleSurgerySelection();
     this.closeCombobox();
-
-    this.selectedSurgery = value || null;
-    this.updateChart();
 
     this.surgeryComboboxState.selectedIndex = index;
   }
