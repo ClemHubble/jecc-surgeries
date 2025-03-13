@@ -38,12 +38,12 @@ class ScrollManager {
       this.transitionPoints.length >= 2 &&
       scrollTop > this.transitionPoints[1]
     ) {
-      newActiveViz = "viz-surgery";
+      newActiveViz = "viz-dimensions";
     } else if (
       this.transitionPoints.length >= 1 &&
       scrollTop > this.transitionPoints[0]
     ) {
-      newActiveViz = "viz-dimensions";
+      newActiveViz = "viz-surgery";
     }
 
     if (newActiveViz !== this.activeViz) {
