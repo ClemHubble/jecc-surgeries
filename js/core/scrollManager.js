@@ -49,6 +49,11 @@ class ScrollManager {
     if (newActiveViz !== this.activeViz) {
       this.activeViz = newActiveViz;
 
+      document.querySelectorAll('.tooltip').forEach(tooltip => {
+        tooltip.style.opacity = 0;
+        tooltip.style.display = 'none';
+      });
+
       this.vizSections.forEach((section) => {
         if (section.id === this.activeViz) {
           section.classList.add("active");
@@ -63,6 +68,7 @@ class ScrollManager {
     }
 
     let activeSection = null;
+    let activePreset = null;
 
     this.sections.forEach((section) => {
       const rect = section.getBoundingClientRect();
@@ -74,6 +80,7 @@ class ScrollManager {
 
       if (isVisible && sectionViz === this.activeViz) {
         activeSection = section;
+        activePreset = section.dataset.preset;
         section.classList.add("active");
       } else {
         section.classList.remove("active");

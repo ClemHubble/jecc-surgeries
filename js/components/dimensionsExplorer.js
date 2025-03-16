@@ -40,6 +40,7 @@ class DimensionsExplorer {
       ageRangeMin: document.getElementById("age-range-min"),
       ageRangeMax: document.getElementById("age-range-max"),
       agePresetButtons: document.querySelectorAll(".preset-btn"),
+      showMortalityOnly: document.getElementById("show-mortality-only"),
       activePreset: null,
       legend: document.getElementById("dimension-legend"),
       stats: {
@@ -86,6 +87,7 @@ class DimensionsExplorer {
 
     this.updateChart = this.updateChart.bind(this);
     this.handleFiltersChange = this.handleFiltersChange.bind(this);
+    this.handlePresetChange = this.handlePresetChange.bind(this);
 
     this.setupEventListeners();
 
@@ -241,6 +243,32 @@ class DimensionsExplorer {
 
     this.surgeryControls.comboboxOptions.innerHTML = "";
 
+    const allOption = document.createElement("div");
+    allOption.className = "combobox-option";
+    allOption.dataset.value = "";
+    allOption.dataset.index = -1;
+    allOption.textContent = "All surgeries";
+    
+    if (!this.selectedSurgery) {
+      allOption.classList.add("selected");
+    }
+    
+    allOption.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.selectComboboxOption(null, -1);
+    });
+    
+    allOption.addEventListener("mouseover", () => {
+      this.clearAllHighlights();
+      allOption.classList.add("highlighted");
+    });
+    
+    allOption.addEventListener("mouseout", () => {
+      allOption.classList.remove("highlighted");
+    });
+    
+    this.surgeryControls.comboboxOptions.appendChild(allOption);
+
     const searchText = filterText.toLowerCase().trim();
     this.surgeryComboboxState.filteredOptions = this.surgeryComboboxState.options.filter(
       (surgery) => surgery.name.toLowerCase().includes(searchText)
@@ -272,7 +300,9 @@ class DimensionsExplorer {
       });
       
       option.addEventListener("mouseover", () => {
-        this.highlightComboboxOption(index);
+        this.clearAllHighlights();
+        option.classList.add("highlighted");
+        this.surgeryComboboxState.selectedIndex = index;
       });
       
       option.addEventListener("mouseout", () => {
@@ -292,6 +322,15 @@ class DimensionsExplorer {
         }
       }, 0);
     }
+  }
+
+  clearAllHighlights() {
+    if (!this.surgeryControls.comboboxOptions) return;
+    
+    const options = this.surgeryControls.comboboxOptions.querySelectorAll(".combobox-option");
+    options.forEach(option => {
+      option.classList.remove("highlighted");
+    });
   }
 
   toggleCombobox() {
@@ -356,20 +395,39 @@ class DimensionsExplorer {
 
   handleComboboxKeydown(e) {
     const { filteredOptions, selectedIndex } = this.surgeryComboboxState;
+    const options = this.surgeryControls.comboboxOptions.querySelectorAll(".combobox-option");
 
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
-        if (selectedIndex < filteredOptions.length - 1) {
-          this.highlightComboboxOption(selectedIndex + 1);
+        this.clearAllHighlights();
+        
+        let nextIndex = selectedIndex + 1;
+        if (nextIndex >= filteredOptions.length) nextIndex = filteredOptions.length - 1;
+        
+        if (nextIndex >= 0 && nextIndex < options.length - 1) {
+          options[nextIndex + 1].classList.add("highlighted");
+          options[nextIndex + 1].scrollIntoView({ block: "nearest" });
+          this.surgeryComboboxState.selectedIndex = nextIndex;
         }
         break;
 
       case "ArrowUp":
         e.preventDefault();
-        if (selectedIndex > 0) {
-          this.highlightComboboxOption(selectedIndex - 1);
+        this.clearAllHighlights();
+        
+        let prevIndex = selectedIndex - 1;
+        if (prevIndex < -1) prevIndex = -1;
+        
+        if (prevIndex === -1) {
+          options[0].classList.add("highlighted");
+          options[0].scrollIntoView({ block: "nearest" });
+        } else if (prevIndex >= 0) {
+          options[prevIndex + 1].classList.add("highlighted");
+          options[prevIndex + 1].scrollIntoView({ block: "nearest" });
         }
+        
+        this.surgeryComboboxState.selectedIndex = prevIndex;
         break;
 
       case "Enter":
@@ -379,6 +437,8 @@ class DimensionsExplorer {
           if (option) {
             this.selectComboboxOption(option.name, selectedIndex);
           }
+        } else if (selectedIndex === -1) {
+          this.selectComboboxOption(null, -1);
         }
         break;
 
@@ -401,13 +461,13 @@ class DimensionsExplorer {
       option.classList.remove("highlighted");
     });
   
-    if (index < 0) index = 0;
-    if (index >= options.length) index = options.length - 1;
-    
-    if (options[index]) {
-      options[index].classList.add("highlighted");
+    if (index >= -1 && index < options.length) {
+      const actualIndex = index === -1 ? 0 : index + 1;
       
-      options[index].scrollIntoView({ block: "nearest" });
+      if (options[actualIndex]) {
+        options[actualIndex].classList.add("highlighted");
+        options[actualIndex].scrollIntoView({ block: "nearest" });
+      }
     }
     
     this.surgeryComboboxState.selectedIndex = index;
@@ -576,6 +636,26 @@ class DimensionsExplorer {
         this.closeCombobox();
       }
     });
+
+    document.querySelectorAll('.text-section[data-viz="viz-dimensions"]').forEach(section => {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && entry.target.classList.contains('active')) {
+            const preset = entry.target.dataset.preset;
+            if (preset) {
+              this.handlePresetChange(preset);
+            }
+          }
+        });
+      }, { threshold: 0.7 });
+      
+      observer.observe(section);
+    });
+
+    // Set up mortality toggle
+    if (this.elements.showMortalityOnly) {
+      this.elements.showMortalityOnly.addEventListener("change", this.handleFiltersChange);
+    }
   }
 
   clearActivePreset() {
@@ -610,9 +690,12 @@ class DimensionsExplorer {
 
   getFilterSettings() {
     return {
-      ageMin: parseInt(this.elements.ageMin.value),
-      ageMax: parseInt(this.elements.ageMax.value),
+      ageRange: {
+        min: parseInt(this.elements.ageMin.value),
+        max: parseInt(this.elements.ageMax.value),
+      },
       selectedSurgery: this.selectedSurgery,
+      mortalityOnly: this.elements.showMortalityOnly && this.elements.showMortalityOnly.checked,
     };
   }
 
@@ -885,6 +968,10 @@ class DimensionsExplorer {
         <div><span style="font-weight: 500; color: #555;">Approach:</span> ${d.approach || "Unknown"}</div>
       </div>
       
+      <div style="border-top: 1px solid #eee; padding: 8px 0; margin-bottom: 8px;">
+        <div><span style="font-weight: 500; color: #555;">Diagnosis:</span> ${d.dx || "Not available"}</div>
+      </div>
+      
       <div style="border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 8px 0; margin-bottom: 8px;">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
           <div><span style="font-weight: 500; color: #555;">Blood Loss:</span> ${Formatters.formatValue(DataProcessor.getDimensionValue(d, "ebl"), "ebl")}</div>
@@ -1141,5 +1228,71 @@ class DimensionsExplorer {
     );
     this.elements.stats.mortality.textContent =
       stats.mortalityRate.toFixed(1) + "%";
+  }
+
+  handlePresetChange(preset) {
+    const vizContainer = document.getElementById('viz-dimensions');
+    const dimensionsSection = document.getElementById('dimensions-section');
+    const filterSection = document.getElementById('surgery-filter-section');
+    const ageFilterSection = document.getElementById('age-filter-section');
+
+    this.hideAllTooltips();
+
+    if (preset === 'custom') {
+      vizContainer.classList.remove('preset-mode');
+      
+      this.toggleAgeInputsDisabled(false);
+      
+      this.elements.xAxis.value = 'duration';
+      this.elements.yAxis.value = 'bmi';
+      this.elements.colorBy.value = 'asa';
+      this.elements.sizeBy.value = 'icu';
+      
+      this.setAgeRange(0, 100);
+      if (this.surgeryControls.comboboxValue && this.selectedSurgery === null) {
+        this.surgeryControls.comboboxValue.textContent = "All surgeries";
+        this.surgeryControls.comboboxValue.classList.add("placeholder");
+      }
+      
+      this.updateChart();
+      return;
+    }
+    
+    vizContainer.classList.add('preset-mode');
+    
+    this.toggleAgeInputsDisabled(true);
+    this.clearActivePreset();
+    
+    if (preset === 'preset1') {
+      this.elements.xAxis.value = 'duration';
+      this.elements.yAxis.value = 'bmi';
+      this.elements.colorBy.value = 'asa';
+      this.elements.sizeBy.value = 'icu';
+      
+      this.setAgeRange(0, 100);
+      
+    } else if (preset === 'preset2') {
+      this.elements.xAxis.value = 'duration';
+      this.elements.yAxis.value = 'icu';
+      this.elements.colorBy.value = 'asa';
+      this.elements.sizeBy.value = 'ebl';
+      
+      this.setAgeRange(0, 100);
+    }
+    
+    this.updateChart();
+  }
+  
+  toggleAgeInputsDisabled(disabled) {
+    if (this.elements.ageMin) this.elements.ageMin.disabled = disabled;
+    if (this.elements.ageMax) this.elements.ageMax.disabled = disabled;
+    if (this.elements.ageRangeMin) this.elements.ageRangeMin.disabled = disabled;
+    if (this.elements.ageRangeMax) this.elements.ageRangeMax.disabled = disabled;
+    
+    if (this.elements.agePresetButtons) {
+      this.elements.agePresetButtons.forEach(btn => {
+        btn.disabled = disabled;
+      });
+    }
   }
 }

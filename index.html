@@ -130,7 +130,7 @@
                     </div>
                 </div>
 
-                
+
 
                 <div class="viz-section" id="viz-surgery">
                     <div class="input-container">
@@ -234,8 +234,8 @@
                                         </div>
                                         <div class="combobox-dropdown" id="dimensions-surgery-combobox-dropdown">
                                             <div class="combobox-search-container">
-                                                <input type="text" id="dimensions-surgery-combobox-search" class="combobox-search"
-                                                    placeholder="Search surgeries...">
+                                                <input type="text" id="dimensions-surgery-combobox-search"
+                                                    class="combobox-search" placeholder="Search surgeries...">
                                             </div>
                                             <div class="combobox-options" id="dimensions-surgery-combobox-options">
                                             </div>
@@ -244,6 +244,16 @@
                                     <input type="text" id="dimensions-surgery-search" style="display: none;">
                                     <select id="dimensions-surgery-select" style="display: none;">
                                     </select>
+                                    <div class="filter-hint">Surgery filtering is available in all view modes</div>
+                                </div>
+                            </div>
+
+                            <div class="filter-section highlight-section" id="mortality-filter-section">
+                                <div class="filter-group">
+                                    <div class="filter-checkbox">
+                                        <input type="checkbox" id="show-mortality-only">
+                                        <label for="show-mortality-only">Show mortality cases only</label>
+                                    </div>
                                 </div>
                             </div>
 
@@ -334,7 +344,7 @@
 
             <div class="text-container">
                 <section class="text-section" data-viz="viz-profile">
-                <!-- <section class="text-section" data-viz="viz-profile" data-highlight="demographics-section"> -->
+                    <!-- <section class="text-section" data-viz="viz-profile" data-highlight="demographics-section"> -->
                     <h3>Who needs surgery?</h3>
                     <p>The risk of needing surgery varies significantly with age. In early childhood, surgeries are rare
                         and include tonsillectomies and appendectomies. In middle age, gallbladder removal and joint
@@ -342,7 +352,10 @@
                         become prevalent. Elderly patients often need cardiac or cancer-related surgeries.</p>
                     <p>Sex also plays a role in surgical needs. Women may require gynecological procedures, while men
                         face higher rates of certain cardiovascular surgeries.</p>
-                    <p>We hope this tool will help the user explore what surgeries people get throughout their lifetime.
+                    <p>We hope this tool will help you understand the likelihood of needing surgery at your particular
+                        age, the type of surgery you might need, and the potential risks associated with the surgery. If
+                        you know what type of surgery you already need, you can see how likely that surgery is to be
+                        needed at your age.
                     </p>
                     <figure class="cartoons">
                         <img src="assets/first_panel.png">
@@ -370,10 +383,10 @@
                         factors accumulate.</p>
                 </section> -->
 
-                
+
 
                 <!-- <section class="text-section" data-viz="viz-dimensions" data-highlight="dimensions-section"> -->
-                
+
 
                 <!-- <section class="text-section" data-viz="viz-dimensions" data-highlight="age-filter-section">
                     <h3>Age as a filtering dimension</h3>
@@ -418,11 +431,12 @@
                         name to quickly find the ones you're interested in. The dataset includes hundreds of different
                         surgical procedures across various specialties.</p>
                     <p>Once you select a procedure, the dashboard will update to show a comprehensive profile of that
-                        specific surgery type - revealing demographic patterns, operative details, resource utilization,
+                        specific surgery type, revealing demographic patterns, operative details, resource utilization,
                         and outcomes specific to that procedure.</p>
-                    <p>This granular approach allows clinicians, hospital administrators, and researchers to understand
-                        the unique characteristics of each procedure type, leading to better resource planning, risk
-                        assessment, and quality improvement initiatives.</p>
+                    <p>
+                        This will help inform you about the unique characteristics of each procedure type, which will be
+                        useful for planning and for understanding what you can expect from the surgery.
+                    </p>
                     <figure class="cartoons">
                         <img src="assets/third_panel.png">
                     </figure>
@@ -432,24 +446,49 @@
                     <div class="transition-label">Dimensions explorer</div>
                 </div>
 
-                <section class="text-section" data-viz="viz-dimensions">
-                    <h3>Exploring multiple dimensions</h3>
-                    <p>Surgical outcomes are influenced by numerous interconnected factors. Using this multidimensional
-                        explorer, you can investigate relationships between different metrics that wouldn't be apparent
-                        in simple visualizations.</p>
-                    <p>Think of the data as a multi-dimensional space, where each dimension represents a different
-                        surgical variable. Using the selectors on the left, you can choose which "slice" of this space
-                        to view, revealing patterns that might otherwise remain hidden.</p>
-                    <p>Try different combinations of dimensions for the X and Y axes. For example, examine how blood
-                        loss relates to surgery duration, or how BMI affects hospital stays across different
-                        departments.</p>
-                    <p>There is also the option to add a quantitative and categorical variable into the visualization
-                        by changing the size and color of the circles, respectively.
-                    </p>
+                <section class="text-section" data-viz="viz-dimensions" data-preset="preset1">
+                    <h3>Exploring multiple dimensions: surgery duration vs. BMI</h3>
+                    <p>The following section involves a more complex visualization that encodes multiple dimensions
+                        simultaneously: X-axis, Y-axis, color, and point size. Although you cannot alter the dimensions
+                        now (this is to prevent issues with overwhelming you with too many options), at the end of the
+                        section you will be able to do so yourself. However, you are free to filter by surgery or by
+                        mortality result.</p>
+                    <p>Here, there's an interesting relationship between a patient's BMI and how long their surgery
+                        takes. Although the distribution of BMI here is relatively uniform, we can see that the
+                        abnormally long
+                        surgeries tend to be associated with lower BMIs, and that these surgeries are more likely to be
+                        of a higher ASA score (i.e. higher-risk).</p>
+                    <p>Color indicates ASA score, a measure of a patient's physical status before surgery. Notice how
+                        higher ASA scores (shown in darker colors) tend to cluster in certain regions, suggesting
+                        relationships between physical condition, BMI, and surgical complexity.</p>
                     <figure class="cartoons">
                         <img src="assets/second_panel.png">
                     </figure>
+                </section>
 
+                <section class="text-section" data-viz="viz-dimensions" data-preset="preset2">
+                    <h3>Exploring multiple dimensions: operation time vs. ICU stay duration</h3>
+                    <p>This visualization uses operation time as the X-axis and ICU stay duration as the Y-axis. While
+                        there is no correlation between the two, it is helpful in seeing trends within the color and size
+                        encodings of this visualization. We can see that longer ICU stays are significantly rarer, and
+                        those stays often have high ASA scores and are more likely to result in mortality. Surprisingly,
+                        patients with the longest surgeries often have low ASA scores and low ICU stay durations.
+                    </p>
+                    <p>The size of each circle represents blood loss during surgery. In general, morality cases more
+                        often have abnormally high blood loss, but this is not always the case. In general, lower ASA
+                        scores have lower blood loss and typically have little-to-no ICU stay duration.</p>
+                </section>
+
+                <section class="text-section" data-viz="viz-dimensions" data-preset="custom">
+                    <h3>Exploring multiple dimensions: your turn!</h3>
+                    <p>Now it's your turn to explore! Using the controls on the left, select different dimensions for
+                        the X and Y axes to discover new patterns in surgical outcomes.</p>
+                    <p>You can investigate relationships between BMI, blood loss, ICU days, and surgery duration. Try
+                        different combinations to reveal insights that we haven't shown you yet.
+                    </p>
+                    <p>Add even more dimensions by using color and size to encode additional variables. For example,
+                        color points by department to see specialty-specific patterns, or size points by ICU days to
+                        highlight high-resource cases.</p>
                 </section>
 
                 <!-- <section class="text-section" data-viz="viz-surgery">
@@ -467,7 +506,7 @@
                         are commonly used for the procedure, or if general anesthesia is the standard approach. This has
                         implications for recovery trajectories and resource utilization.</p>
                 </section> -->
-<!-- 
+                <!-- 
                 <section class="text-section" data-viz="viz-surgery">
                     <h3>Resource utilization and outcomes analysis</h3>
                     <p>The resource utilization section provides detailed information about what's typically required

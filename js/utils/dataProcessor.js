@@ -30,6 +30,7 @@ const DataProcessor = {
 
       if (!d.department || d.department === "") d.department = "Unknown";
       if (!d.approach || d.approach === "") d.approach = "Unknown";
+      if (!d.dx || d.dx === "") d.dx = "Unknown";
 
       return d;
     });
@@ -113,13 +114,21 @@ const DataProcessor = {
         return false;
       }
 
-      const ageMatch = d.age >= filters.ageMin && d.age <= filters.ageMax;
-      
-      if (filters.selectedSurgery) {
-        return ageMatch && d.opname === filters.selectedSurgery;
+      // Check age range filter
+      const ageMatch = d.age >= filters.ageRange.min && d.age <= filters.ageRange.max;
+      if (!ageMatch) return false;
+
+      // Check selected surgery filter
+      if (filters.selectedSurgery && d.opname !== filters.selectedSurgery) {
+        return false;
+      }
+
+      // Check mortality filter
+      if (filters.mortalityOnly && !d.death_inhosp) {
+        return false;
       }
       
-      return ageMatch;
+      return true;
     });
   },
 

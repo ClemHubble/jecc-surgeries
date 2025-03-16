@@ -1138,7 +1138,7 @@ input[type="range"]:focus {
     transition: all 0.2s ease;
 }
 
-.preset-btn:hover {
+.preset-btn:hover:not(:disabled) {
     background-color: var(--muted);
     border-color: var(--muted-foreground);
 }
@@ -1147,6 +1147,12 @@ input[type="range"]:focus {
     background-color: var(--primary);
     color: white;
     border-color: var(--primary);
+}
+
+.preset-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--muted);
 }
 
 .stat-comparison {
@@ -1759,4 +1765,38 @@ figure.cartoons img {
   display: block;
   margin: 0 auto;
   object-fit: contain;
+}
+
+.text-section[data-preset] {
+    transition: all 0.3s ease-in-out;
+}
+
+.preset-mode .filter-section:not(#surgery-filter-section):not(#mortality-filter-section) {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.preset-mode .filter-section:not(#surgery-filter-section):not(#mortality-filter-section) select,
+.preset-mode .filter-section:not(#surgery-filter-section):not(#mortality-filter-section) input,
+.preset-mode .filter-section:not(#surgery-filter-section):not(#mortality-filter-section) .combobox-display {
+    background-color: var(--muted);
+    cursor: not-allowed;
+}
+
+.preset-mode #surgery-filter-section,
+.preset-mode #mortality-filter-section {
+    border-left: 2px solid var(--primary);
+    background-color: rgba(var(--primary-rgb, 24, 24, 27), 0.03);
+}
+
+.filter-hint {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin-top: 0.5rem;
+  font-style: italic;
+  text-align: center;
+}
+
+.preset-mode #surgery-filter-section .filter-hint {
+  color: var(--primary);
 }
